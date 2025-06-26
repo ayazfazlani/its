@@ -47,7 +47,13 @@
         <div class="card bg-base-100 shadow">
             <div class="card-body flex flex-row items-center justify-between">
                 <div>
-                    <h5 class="card-title mb-1">My Projects</h5>
+                    <h5 class="card-title mb-1">
+                        @if($isManagerOrAdmin)
+                            Total Projects
+                        @else
+                            My Projects
+                        @endif
+                    </h5>
                     <h4 class="text-2xl font-bold">{{ $performanceStats['total_projects'] ?? 0 }}</h4>
                     <small class="text-base-content/70">{{ $performanceStats['completed_projects'] ?? 0 }} completed</small>
                 </div>
@@ -61,7 +67,13 @@
         <div class="card bg-base-100 shadow">
             <div class="card-body flex flex-row items-center justify-between">
                 <div>
-                    <h5 class="card-title mb-1">My Campaigns</h5>
+                    <h5 class="card-title mb-1">
+                        @if($isManagerOrAdmin)
+                            Total Campaigns
+                        @else
+                            My Campaigns
+                        @endif
+                    </h5>
                     <h4 class="text-2xl font-bold">{{ $performanceStats['total_campaigns'] ?? 0 }}</h4>
                     <small class="text-base-content/70">{{ $performanceStats['active_campaigns'] ?? 0 }} active</small>
                 </div>
@@ -103,34 +115,67 @@
     </div>
 
     <!-- Department Overview -->
-    <div class="flex flex-col gap-6 min-h-[40rem] w-full">
-        <h2 class="text-2xl font-bold mb-2">Department Overview</h2>
-        <div class="grid gap-6 md:grid-cols-3">
-            @foreach($departmentsStats as $dept => $stats)
-                <div class="card bg-base-100 shadow-xl border border-base-200">
-                    <div class="card-body">
-                        <h3 class="card-title capitalize">{{ $dept }}</h3>
-                        <div class="flex flex-col gap-2 mt-2">
-                            <div class="flex items-center gap-2">
-                                <span class="badge badge-primary">Total Employees</span>
-                                <span class="font-bold">{{ $stats['total_employees'] }}</span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span class="badge badge-success">Active Employees</span>
-                                <span class="font-bold">{{ $stats['active_employees'] }}</span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span class="badge badge-info">Projects</span>
-                                <span class="font-bold">{{ $stats['projects'] }}</span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span class="badge badge-warning">Campaigns</span>
-                                <span class="font-bold">{{ $stats['campaigns'] }}</span>
+    @if($isManagerOrAdmin)
+        <div class="flex flex-col gap-6 min-h-[40rem] w-full">
+            <h2 class="text-2xl font-bold mb-2">Department Overview</h2>
+            <div class="grid gap-6 md:grid-cols-3">
+                @foreach($departmentsStats as $dept => $stats)
+                    <div class="card bg-base-100 shadow-xl border border-base-200">
+                        <div class="card-body">
+                            <h3 class="card-title capitalize">{{ $dept }}</h3>
+                            <div class="flex flex-col gap-2 mt-2">
+                                <div class="flex items-center gap-2">
+                                    <span class="badge badge-primary">Total Employees</span>
+                                    <span class="font-bold">{{ $stats['total_employees'] }}</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="badge badge-success">Active Employees</span>
+                                    <span class="font-bold">{{ $stats['active_employees'] }}</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="badge badge-info">Projects</span>
+                                    <span class="font-bold">{{ $stats['projects'] }}</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="badge badge-warning">Campaigns</span>
+                                    <span class="font-bold">{{ $stats['campaigns'] }}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            @endforeach
+                @endforeach
+            </div>
         </div>
-    </div>
+    @else
+        <div class="flex flex-col gap-6 min-h-[40rem] w-full">
+            <h2 class="text-2xl font-bold mb-2">My Department Overview</h2>
+            <div class="grid gap-6 md:grid-cols-1">
+                @foreach($departmentsStats as $dept => $stats)
+                    <div class="card bg-base-100 shadow-xl border border-base-200">
+                        <div class="card-body">
+                            <h3 class="card-title capitalize">{{ $dept }}</h3>
+                            <div class="flex flex-col gap-2 mt-2">
+                                <div class="flex items-center gap-2">
+                                    <span class="badge badge-primary">Total Employees</span>
+                                    <span class="font-bold">{{ $stats['total_employees'] }}</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="badge badge-success">Active Employees</span>
+                                    <span class="font-bold">{{ $stats['active_employees'] }}</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="badge badge-info">Projects</span>
+                                    <span class="font-bold">{{ $stats['projects'] }}</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="badge badge-warning">Campaigns</span>
+                                    <span class="font-bold">{{ $stats['campaigns'] }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @endif
 </div>

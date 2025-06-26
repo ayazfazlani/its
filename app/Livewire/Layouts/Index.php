@@ -78,7 +78,7 @@ class Index extends Component
         $q->where('users.id', $userId);
       })
       ->latest()
-      ->take(5)
+      ->take(2)
       ->get();
   }
 

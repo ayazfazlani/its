@@ -27,25 +27,23 @@ class ManagerDashboard extends Component
   public $hasEmployeeRecord = false;
   public $latestNotices;
   public $departmentsStats = [];
+  public $isManagerOrAdmin = false;
 
   public function mount()
   {
-    $user = Auth::user();
-    $this->department = $user->employee->department ?? null;
-    $this->loadDepartmentsStats();
-    $this->loadRecentNotices();
-
     $this->user = Auth::user();
+    $this->isManagerOrAdmin = $this->user->hasAnyRole(['Manager', 'Admin']);
     $this->employee = $this->user->employee ?? null;
     $this->hasEmployeeRecord = $this->employee !== null;
-
     if ($this->hasEmployeeRecord) {
       $this->department = $this->employee->department ?? 'Unknown';
-      $this->loadEmployeeData();
-      $this->loadPerformanceStats();
-      $this->loadUpcomingDeadlines();
-      $this->loadRecentActivities();
     }
+    $this->loadDepartmentsStats();
+    $this->loadRecentNotices();
+    $this->loadEmployeeData();
+    $this->loadPerformanceStats();
+    $this->loadUpcomingDeadlines();
+    $this->loadRecentActivities();
   }
 
   public function loadTeamStats()
@@ -74,18 +72,18 @@ class ManagerDashboard extends Component
 
   public function loadEmployeeData()
   {
-    if ($this->employee) {
-      // Load employee's projects
-      $this->myProjects = webdesign::orderBy('created_at', 'desc')
-        ->take(5)
-        ->get();
-
-      // Load employee's campaigns
-      $this->myCampaigns = Marketing::orderBy('created_at', 'desc')
-        ->take(5)
-        ->get();
-
-      // Load department statistics
+    if ($this->isManagerOrAdmin) {
+      $this->myProjects = webdesign::orderBy('created_at', 'desc')->take(5)->get();
+      $this->myCampaigns = Marketing::orderBy('created_at', 'desc')->take(5)->get();
+      $this->departmentStats = Employee::selectRaw('department, status, COUNT(*) as count')
+        ->groupBy('department', 'status')
+        ->get()
+        ->groupBy('department');
+    } elseif ($this->employee) {
+      $this->myProjects = webdesign::where('employee_id', $this->employee->id)
+        ->orderBy('created_at', 'desc')->take(5)->get();
+      $this->myCampaigns = Marketing::where('employee_id', $this->employee->id)
+        ->orderBy('created_at', 'desc')->take(5)->get();
       $this->departmentStats = Employee::where('department', $this->department)
         ->selectRaw('status, COUNT(*) as count')
         ->groupBy('status')
@@ -97,7 +95,7 @@ class ManagerDashboard extends Component
 
   public function loadPerformanceStats()
   {
-    if ($this->employee) {
+    if ($this->isManagerOrAdmin) {
       $this->performanceStats = [
         'total_projects' => webdesign::count(),
         'completed_projects' => webdesign::where('status', 'completed')->count(),
@@ -106,6 +104,15 @@ class ManagerDashboard extends Component
         'avg_performance' => webdesign::avg('performance') ?? 0,
         'avg_campaign_performance' => Marketing::avg('performance') ?? 0
       ];
+    } elseif ($this->employee) {
+      $this->performanceStats = [
+        'total_projects' => webdesign::where('employee_id', $this->employee->id)->count(),
+        'completed_projects' => webdesign::where('employee_id', $this->employee->id)->where('status', 'completed')->count(),
+        'total_campaigns' => Marketing::where('employee_id', $this->employee->id)->count(),
+        'active_campaigns' => Marketing::where('employee_id', $this->employee->id)->where('status', 'active')->count(),
+        'avg_performance' => webdesign::where('employee_id', $this->employee->id)->avg('performance') ?? 0,
+        'avg_campaign_performance' => Marketing::where('employee_id', $this->employee->id)->avg('performance') ?? 0
+      ];
     }
   }
 
@@ -113,119 +120,45 @@ class ManagerDashboard extends Component
   {
     if ($this->employee) {
       $this->upcomingDeadlines = collect();
-
-      //     // Get upcoming project deadlines
-      $projectDeadlines = webdesign::where('status', 'in_progress')
-        ->where('end_date', '>=', now())
-        ->where('end_date', '<=', now()->addDays(7))
-        ->get()
-        ->map(function ($project) {
-          return [
-            'type' => 'Project',
-            'name' => $project->project_name,
-            'deadline' => $project->end_date,
-            'status' => 'urgent'
-          ];
-        });
-
-      //     // Get upcoming campaign deadlines
-      //     $campaignDeadlines = Marketing::where('employee_id', $this->employee->id)
-      //         ->where('status', 'active')
-      //         ->where('end_date', '>=', now())
-      //         ->where('end_date', '<=', now()->addDays(7))
-      //         ->get()
-      //         ->map(function ($campaign) {
-      //             return [
-      //                 'type' => 'Campaign',
-      //                 'name' => $campaign->name,
-      //                 'deadline' => $campaign->end_date,
-      //                 'status' => 'urgent'
-      //             ];
-      //         });
-
-      //     $this->upcomingDeadlines = $projectDeadlines->merge($campaignDeadlines)
-      //         ->sortBy('deadline')
-      //         ->take(5);
+      if ($this->isManagerOrAdmin) {
+        $projectDeadlines = webdesign::where('status', 'in_progress')
+          ->where('end_date', '>=', now())
+          ->where('end_date', '<=', now()->addDays(7))
+          ->get()
+          ->map(function ($project) {
+            return [
+              'type' => 'Project',
+              'name' => $project->project_name,
+              'deadline' => $project->end_date,
+              'status' => 'urgent'
+            ];
+          });
+        // Add campaign deadlines for all employees if needed
+        $this->upcomingDeadlines = $projectDeadlines;
+      } else {
+        $projectDeadlines = webdesign::where('employee_id', $this->employee->id)
+          ->where('status', 'in_progress')
+          ->where('end_date', '>=', now())
+          ->where('end_date', '<=', now()->addDays(7))
+          ->get()
+          ->map(function ($project) {
+            return [
+              'type' => 'Project',
+              'name' => $project->project_name,
+              'deadline' => $project->end_date,
+              'status' => 'urgent'
+            ];
+          });
+        $this->upcomingDeadlines = $projectDeadlines;
+      }
     }
   }
-
-  // public function loadRecentActivities()
-  // {
-  //     if ($this->employee) {
-  //         $this->recentActivities = collect();
-
-  //         // Get recent project activities
-  //         $projectActivities ? webdesign::where('employee_id', $this->employee->id)
-  //             ->orderBy('updated_at', 'desc')
-  //             ->take(3)
-  //             ->get()
-  //             ->map(function ($project) {
-  //                 return [
-  //                     'type' => 'Project',
-  //                     'action' => 'Updated',
-  //                     'name' => $project->project_name,
-  //                     'time' => $project->updated_at->diffForHumans(),
-  //                     'status' => $project->status
-  //                 ];
-  //             }) : '';
-
-  //         // Get recent campaign activities
-  //         $campaignActivities ? Marketing::where('employee_id', $this->employee->id)
-  //             ->orderBy('updated_at', 'desc')
-  //             ->take(3)
-  //             ->get()
-  //             ->map(function ($campaign) {
-  //                 return [
-  //                     'type' => 'Campaign',
-  //                     'action' => 'Updated',
-  //                     'name' => $campaign->name,
-  //                     'time' => $campaign->updated_at->diffForHumans(),
-  //                     'status' => $campaign->status
-  //                 ];
-  //             }) : '';
-
-  //         $this->recentActivities = $projectActivities->merge($campaignActivities)
-  //             ->sortByDesc('time')
-  //             ->take(5);
-  //     }
-  // }
 
   public function loadRecentActivities()
   {
     if ($this->employee) {
       $this->recentActivities = collect();
-
-      // Check employee department and load appropriate activities
-      if ($this->department === 'web design') {
-        $this->recentActivities = webdesign::orderBy('updated_at', 'desc')
-          ->take(5) // Get 5 directly since we're only showing one type
-          ->get()
-          ->map(function ($project) {
-            return [
-              'type' => 'Project',
-              'action' => 'Updated',
-              'name' => $project->project_name,
-              'time' => $project->updated_at->diffForHumans(),
-              'status' => $project->status
-            ];
-          });
-      } elseif ($this->department === 'digital marketing') {
-        $this->recentActivities = Marketing::orderBy('updated_at', 'desc')
-          ->take(5) // Get 5 directly since we're only showing one type
-          ->get()
-          ->map(function ($campaign) {
-            return [
-              'type' => 'Campaign',
-              'action' => 'Updated',
-              'name' => $campaign->name,
-              'time' => $campaign->updated_at->diffForHumans(),
-              'status' => $campaign->status
-            ];
-          });
-      }
-
-      // For admin or other departments (if needed)
-      if ($this->user->hasanyRole('Manager|Admin')) {
+      if ($this->isManagerOrAdmin) {
         $projectActivities = webdesign::orderBy('updated_at', 'desc')
           ->take(3)
           ->get()
@@ -238,7 +171,6 @@ class ManagerDashboard extends Component
               'status' => $project->status
             ];
           });
-
         $campaignActivities = Marketing::orderBy('updated_at', 'desc')
           ->take(3)
           ->get()
@@ -251,19 +183,67 @@ class ManagerDashboard extends Component
               'status' => $campaign->status
             ];
           });
-
         $this->recentActivities = $projectActivities->concat($campaignActivities)
           ->sortByDesc('time')
           ->take(5);
+      } else {
+        if ($this->department === 'web design') {
+          $this->recentActivities = webdesign::where('employee_id', $this->employee->id)
+            ->orderBy('updated_at', 'desc')
+            ->take(5)
+            ->get()
+            ->map(function ($project) {
+              return [
+                'type' => 'Project',
+                'action' => 'Updated',
+                'name' => $project->project_name,
+                'time' => $project->updated_at->diffForHumans(),
+                'status' => $project->status
+              ];
+            });
+        } elseif ($this->department === 'digital marketing') {
+          $this->recentActivities = Marketing::where('employee_id', $this->employee->id)
+            ->orderBy('updated_at', 'desc')
+            ->take(5)
+            ->get()
+            ->map(function ($campaign) {
+              return [
+                'type' => 'Campaign',
+                'action' => 'Updated',
+                'name' => $campaign->name,
+                'time' => $campaign->updated_at->diffForHumans(),
+                'status' => $campaign->status
+              ];
+            });
+        }
       }
     }
   }
 
   public function loadDepartmentsStats()
   {
-    $departments = Employee::select('department')->distinct()->pluck('department');
-    $this->departmentsStats = [];
-    foreach ($departments as $dept) {
+    if ($this->isManagerOrAdmin) {
+      $departments = Employee::select('department')->distinct()->pluck('department');
+      $this->departmentsStats = [];
+      foreach ($departments as $dept) {
+        $total = Employee::where('department', $dept)->count();
+        $active = Employee::where('department', $dept)->where('status', 'active')->count();
+        $projects = \App\Models\webdesign::whereHas('employee', function($q) use ($dept) {
+          $q->where('department', $dept);
+        })->count();
+        $campaigns = \App\Models\Marketing::whereHas('employee', function($q) use ($dept) {
+          $q->where('department', $dept);
+        })->count();
+        $this->departmentsStats[$dept] = [
+          'total_employees' => $total,
+          'active_employees' => $active,
+          'projects' => $projects,
+          'campaigns' => $campaigns,
+        ];
+      }
+    } elseif ($this->employee) {
+      // Only their own department
+      $dept = $this->department;
       $total = Employee::where('department', $dept)->count();
       $active = Employee::where('department', $dept)->where('status', 'active')->count();
       $projects = \App\Models\webdesign::whereHas('employee', function($q) use ($dept) {

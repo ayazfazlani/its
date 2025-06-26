@@ -67,8 +67,8 @@ Route::middleware(['auth'])->group(function (): void {
 
         if ($user->hasRole('Admin') || $user->hasRole('Admin')) {
             return redirect()->route('home');
-        } elseif ($user->hasRole(['Employee', 'Manager', 'Customer Support'])) {
-            return redirect()->route('employee.dashboard');
+        } elseif ($user->hasRole(['Employee', 'Manager', 'Customer Support','Web Developer','Digital Marketer','SEO Specialist'])) {
+            return redirect()->route('dashboard');
         }
 
         return redirect('/login'); // fallback
@@ -78,7 +78,7 @@ Route::middleware(['auth'])->group(function (): void {
     Route::get('/home', Index::class)->name('home');
 
     // 🔹 Employee Dashboard
-    // Route::get('/employee-dashboard', EpmloyeeDashboard::class)->name('employee.dashboard');
+    Route::get('/employee-dashboard', EpmloyeeDashboard::class)->name('employee.dashboard');
 
     // 🔹 Staff
     Route::get('/staff', Staff::class)->name('staff');
@@ -94,7 +94,7 @@ Route::middleware(['auth'])->group(function (): void {
     Route::middleware(['check.department.or.role:digital marketing,Admin,Employee,Manager,Customer Support'])->group(function () {
         Route::get('/adds', AdInformation::class)->name('ads');
         Route::get('/pauseAds', PauseAds::class)->name('ads.paused');
-        Route::get('/inActiveAds', InActiveAd::class)->name('ads.inActive');
+        Route::get('/overdueAds', InActiveAd::class)->name('ads.inActive');
         Route::get('/clientleft', ClientLeft::class)->name('ads.clientleft');
         Route::get('/details/{id}', AdDetails::class)->name('ad.details');
     });
@@ -134,7 +134,7 @@ Route::middleware(['auth'])->group(function (): void {
 
     // 🔹 Manager Dashboard
     // Route::middleware(['role:Manager|Admin'])->group(function () {
-    //     Route::get('/manager/dashboard', ManagerDashboard::class)->name('manager.dashboard');
+        Route::get('/manager/dashboard', ManagerDashboard::class)->name('dashboard');
     // });
     // endroutes
 

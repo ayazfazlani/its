@@ -18,82 +18,77 @@
         <flux:navlist variant="outline">
             <!-- Dashboard -->
             <flux:navlist.group heading="Platform" class="grid">
-                <flux:navlist.item icon="home" href="{{ route('home') }}">Dashboard</flux:navlist.item>
+                @if(auth()->user()->hasRole(['Manager','Admin']))
+                    <flux:navlist.item icon="home" href="{{ route('home') }}" :current="request()->routeIs('home')">Dashboard</flux:navlist.item>
+                @else
+                    <flux:navlist.item icon="home" href="{{ route('dashboard') }}" :current="request()->routeIs('dashboard')">Dashboard</flux:navlist.item>
+                @endif
             </flux:navlist.group>
 
             <!-- Employees & Branches -->
             <flux:navlist.group heading="Organization" class="grid">
                 @can('View Branches')
-                    <flux:navlist.item icon="building-office" href="{{ route('branches') }}">Branches</flux:navlist.item>
+                    <flux:navlist.item icon="building-office" href="{{ route('branches') }}" :current="request()->routeIs('branches')">Branches</flux:navlist.item>
                 @endcan
 
                 @can('View Employees')
-                    <flux:navlist.item icon="user-group" href="{{ route('employees.list') }}">Employees</flux:navlist.item>
-                    <flux:navlist.item icon="users" href="{{ route('emp.marketers') }}">Digital Marketers
-                    </flux:navlist.item>
-                    <flux:navlist.item icon="magnifying-glass" href="{{ route('emp.seo') }}">SEO Specialists
-                    </flux:navlist.item>
-                    <flux:navlist.item href="{{ route('emp.customersupport') }}">Customer Support
-                    </flux:navlist.item>
+                    <flux:navlist.item icon="user-group" href="{{ route('employees.list') }}" :current="request()->routeIs('employees.*')">Employees</flux:navlist.item>
+                    <flux:navlist.item icon="users" href="{{ route('emp.marketers') }}" :current="request()->routeIs('emp.marketers')">Digital Marketers</flux:navlist.item>
+                    <flux:navlist.item icon="magnifying-glass" href="{{ route('emp.seo') }}" :current="request()->routeIs('emp.seo')">SEO Specialists</flux:navlist.item>
+                    <flux:navlist.item icon="cake" href="{{ route('emp.customersupport') }}" :current="request()->routeIs('emp.customersupport')">Customer Support</flux:navlist.item>
                 @endcan
             </flux:navlist.group>
 
             <!-- Web Projects -->
             @can('View Websites')
                 <flux:navlist.group heading="Web Projects" class="grid">
-                    <flux:navlist.item icon="code-bracket" href="{{ route('web.active') }}">In Progress</flux:navlist.item>
-                    <flux:navlist.item icon="eye" href="{{ route('web.cancelled') }}">In Review</flux:navlist.item>
-                    <flux:navlist.item icon="check-circle" href="{{ route('web.completed') }}">Delivered
-                    </flux:navlist.item>
-                    <flux:navlist.item icon="clock" href="{{ route('web.paused') }}">Delayed</flux:navlist.item>
+                    <flux:navlist.item icon="code-bracket" href="{{ route('web.active') }}" :current="request()->routeIs('web.active')">In Progress</flux:navlist.item>
+                    <flux:navlist.item icon="eye" href="{{ route('web.cancelled') }}" :current="request()->routeIs('web.cancelled')">In Review</flux:navlist.item>
+                    <flux:navlist.item icon="check-circle" href="{{ route('web.completed') }}" :current="request()->routeIs('web.completed')">Delivered</flux:navlist.item>
+                    <flux:navlist.item icon="clock" href="{{ route('web.paused') }}" :current="request()->routeIs('web.paused')">Delayed</flux:navlist.item>
                 </flux:navlist.group>
             @endcan
 
             <!-- Google Ads -->
             @can('View Ads')
                 <flux:navlist.group heading="Google Ads" class="grid">
-                    <flux:navlist.item icon="rocket-launch" href="{{ route('ads') }}">Active Ads</flux:navlist.item>
-                    <flux:navlist.item icon="pause-circle" href="{{ route('ads.paused') }}">Paused Ads</flux:navlist.item>
-                    <flux:navlist.item icon="stop-circle" href="{{ route('ads.inActive') }}">Overdue Ads
-                    </flux:navlist.item>
-                    <flux:navlist.item icon="chart-bar" href="{{ route('ads.clientleft') }}">Clients Left
-                    </flux:navlist.item>
+                    <flux:navlist.item icon="rocket-launch" href="{{ route('ads') }}" :current="request()->routeIs('ads')">Active Ads</flux:navlist.item>
+                    <flux:navlist.item icon="pause-circle" href="{{ route('ads.paused') }}" :current="request()->routeIs('ads.paused')">Paused Ads</flux:navlist.item>
+                    <flux:navlist.item icon="stop-circle" href="{{ route('ads.inActive') }}" :current="request()->routeIs('ads.inActive')">Overdue Ads</flux:navlist.item>
+                    <flux:navlist.item icon="chart-bar" href="{{ route('ads.clientleft') }}" :current="request()->routeIs('ads.clientleft')">Clients Left</flux:navlist.item>
                 </flux:navlist.group>
 
                 <flux:navlist.group heading="Ads Payments" class="grid">
-                    <flux:navlist.item icon="check-circle" href="{{ route('ads.pymtclrd') }}">Full Clear
-                    </flux:navlist.item>
-                    <flux:navlist.item icon="adjustments-vertical" href="{{ route('ads.pymthalfclrd') }}">Half Clear
-                    </flux:navlist.item>
-                    <flux:navlist.item icon="x-circle" href="{{ route('ads.pymtuncleared') }}">Uncleared
-                    </flux:navlist.item>
+                    <flux:navlist.item icon="check-circle" href="{{ route('ads.pymtclrd') }}" :current="request()->routeIs('ads.pymtclrd')">Full Clear</flux:navlist.item>
+                    <flux:navlist.item icon="adjustments-vertical" href="{{ route('ads.pymthalfclrd') }}" :current="request()->routeIs('ads.pymthalfclrd')">Half Clear</flux:navlist.item>
+                    <flux:navlist.item icon="x-circle" href="{{ route('ads.pymtuncleared') }}" :current="request()->routeIs('ads.pymtuncleared')">Uncleared</flux:navlist.item>
                 </flux:navlist.group>
             @endcan
 
             <!-- Notices -->
             <flux:navlist.group heading="Notices" class="grid">
-                @can('Send Notice')
-                    <flux:navlist.item icon="megaphone" href="{{ route('notices.all') }}">Notice for All
-                    </flux:navlist.item>
-                    <flux:navlist.item icon="speaker-wave" href="{{ route('notices.specific') }}">Notice for Specific
-                    </flux:navlist.item>
+                @can('View Notice')
+                    <flux:navlist.item icon="megaphone" href="{{ route('notices.all') }}" :current="request()->routeIs('notices.all')">Notice for All</flux:navlist.item>
+                    <flux:navlist.item icon="speaker-wave" href="{{ route('notices.specific') }}" :current="request()->routeIs('notices.specific')">Notice for @if(auth()->user()->hasRole(['Manager','Admin'])) Specific @else Me @endif</flux:navlist.item>
                 @endcan
-                <flux:navlist.item icon="list-bullet" href="{{ route('notices.list') }}">Notice List
-                </flux:navlist.item>
+                @can('Send Notice')
+              
+                <flux:navlist.item icon="list-bullet" href="{{ route('notices.list') }}" :current="request()->routeIs('notices.list')">Notice List</flux:navlist.item>
+                      
+                @endcan
             </flux:navlist.group>
 
             <!-- Roles & Permissions -->
             @can('Manage Roles')
                 <flux:navlist.group heading="Access Control" class="grid">
                     @can('Manage Permissions')
-                        <flux:navlist.item icon="key" href="{{ route('permissions.index') }}">Permissions
-                        </flux:navlist.item>
+                        <flux:navlist.item icon="key" href="{{ route('permissions.index') }}" :current="request()->routeIs('permissions.index')">Permissions</flux:navlist.item>
                     @endcan
                     @can('Manage Roles')
-                        <flux:navlist.item icon="shield-check" href="{{ route('roles.index') }}">Roles</flux:navlist.item>
+                        <flux:navlist.item icon="shield-check" href="{{ route('roles.index') }}" :current="request()->routeIs('roles.index')">Roles</flux:navlist.item>
                     @endcan
                     @can('Assign Roles')
-                        <flux:navlist.item icon="user-plus" href="{{ route('assignRole') }}">Assign Role</flux:navlist.item>
+                        <flux:navlist.item icon="user-plus" href="{{ route('assignRole') }}" :current="request()->routeIs('assignRole')">Assign Role</flux:navlist.item>
                     @endcan
                 </flux:navlist.group>
             @endcan

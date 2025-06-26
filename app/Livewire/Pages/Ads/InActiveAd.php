@@ -4,8 +4,7 @@ namespace App\Livewire\Pages\Ads;
 
 use Livewire\Component;
 use App\Models\Employee;
-use App\Models\Marketing;
-use Masmerise\Toaster\Toaster;
+
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Title;
 

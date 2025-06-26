@@ -2,9 +2,10 @@
 
 namespace App\Livewire\Pages\Notices;
 
-use Livewire\Component;
-use App\Models\Notice;
 use App\Models\User;
+use App\Models\Notice;
+use Livewire\Component;
+use App\Models\NoticeUser;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -15,7 +16,17 @@ class NoticeForSpecific extends Component
   public $selectedUsers = [];
   public $showModal = false;
   public $editingId = null;
+  public $notice;
 
+  public function mount()
+  {
+    if (auth()->user()->hasRole(['Manager', 'Admin'])) {
+      $this->notice = Notice::with('users')->where('target_type', 'specific')->latest()->get();
+    } else {
+      // notice for me like i am employee i want to see my notices
+      $this->notice = NoticeUser::with('notice')->where('user_id', auth()->user()->id)->latest()->get();
+    }
+  }
   public function popUp()
   {
     $this->resetForm();
@@ -89,7 +100,7 @@ class NoticeForSpecific extends Component
   {
     return view('livewire.pages.notices.notice-for-specific', [
       'users' => User::all(),
-      'notices' => Notice::with('users')->where('target_type', 'specific')->latest()->get(),
+      'notices' => $this->notice,
     ]);
   }
 }
