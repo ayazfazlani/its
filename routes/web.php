@@ -47,7 +47,18 @@ use App\Livewire\Pages\CstmrSprt\PaymentHalfCleared;
 Route::get('/dashboard', ManagerDashboard::class)->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth'])->group(function (): void {
+    // 🧭 Root Redirect Based on Role
+    Route::get('', function () {
+        $user = Auth::user();
 
+        if ($user->hasRole('Admin')) {
+            return redirect()->route('home');
+        } else {
+            return redirect()->route('dashboard');
+        }
+
+        return redirect('/login'); // fallback
+    });
     // Impersonations
     Route::post('/impersonate/{user}', [ImpersonationController::class, 'store'])->name('impersonate.store');
     Route::delete('/impersonate/stop', [ImpersonationController::class, 'destroy'])->name('impersonate.destroy');
@@ -61,18 +72,7 @@ Route::middleware(['auth'])->group(function (): void {
 
     // routes
 
-    // 🧭 Root Redirect Based on Role
-    Route::get('/', function () {
-        $user = Auth::user();
 
-        if ($user->hasRole('Admin') || $user->hasRole('Admin')) {
-            return redirect()->route('home');
-        } elseif ($user->hasRole(['Employee', 'Manager', 'Customer Support','Web Developer','Digital Marketer','SEO Specialist'])) {
-            return redirect()->route('dashboard');
-        }
-
-        return redirect('/login'); // fallback
-    });
 
     // 🔹 Admin Dashboard
     Route::get('/home', Index::class)->name('home');
@@ -116,7 +116,7 @@ Route::middleware(['auth'])->group(function (): void {
         Route::get('/branches', Branches::class)->name('branches');
         //     // Route::get('/roles', CreateRoles::class)->name('roles.index');
         Route::get('/permissions', PermissionsCrud::class)->name('permissions.index');
-        Route::get('/', RolesCrud::class)->name('roles.index');
+        Route::get('/roles', RolesCrud::class)->name('roles.index');
         Route::get('/assign', UsersCrud::class)->name('assignRole');
     });
 
@@ -134,7 +134,7 @@ Route::middleware(['auth'])->group(function (): void {
 
     // 🔹 Manager Dashboard
     // Route::middleware(['role:Manager|Admin'])->group(function () {
-        Route::get('/manager/dashboard', ManagerDashboard::class)->name('dashboard');
+        Route::get('/dashboard', ManagerDashboard::class)->name('dashboard');
     // });
     // endroutes
 
