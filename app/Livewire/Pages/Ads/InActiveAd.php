@@ -5,8 +5,9 @@ namespace App\Livewire\Pages\Ads;
 use Livewire\Component;
 use App\Models\Employee;
 
-use Illuminate\Support\Facades\Auth;
+use App\Models\Marketing;
 use Livewire\Attributes\Title;
+use Illuminate\Support\Facades\Auth;
 
 class InActiveAd extends Component
 {

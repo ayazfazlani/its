@@ -61,12 +61,21 @@ class ManagerDashboard extends Component
 
   public function loadRecentNotices()
   {
-    $this->recentNotices = Notice::where('target_type', 'all')
-      ->orWhereHas('users', function ($q) {
-        $q->where('users.id', Auth::id());
+    // $this->recentNotices = Notice::where('target_type', 'all')
+    //   ->orWhereHas('users', function ($q) {
+    //     $q->where('users.id', Auth::id());
+    //   })
+    //   ->latest()
+    //   ->take(5)
+    //   ->get();
+
+    $userId = Auth::id();
+    $this->latestNotices = Notice::with('creator')->where('target_type', 'all')
+      ->orWhereHas('users', function ($q) use ($userId) {
+        $q->where('users.id', $userId);
       })
       ->latest()
-      ->take(5)
+      ->take(2)
       ->get();
   }
 

@@ -15,7 +15,7 @@
     </div>
 
     <!-- Notices Section -->
-    <div class="card bg-info-content shadow-xl">
+    {{-- <div class="card bg-info-content shadow-xl">
         <div class="card-body">
             <h5 class="card-title mb-4 text-info">Latest Notices</h5>
             @if ($latestNotices && count($latestNotices) > 0)
@@ -40,10 +40,39 @@
                 <div class="alert alert-info mt-2">No notices for today.</div>
             @endif
         </div>
+    </div> --}}
+
+      <!-- Notices Section -->
+      <div class="card bg-info-content shadow-xl mt-6">
+        <div class="card-body">
+            <h5 class="card-title mb-4 text-info">Latest Notices</h5>
+            @if ($latestNotices && count($latestNotices) > 0)
+                <ul class="space-y-4">
+                    @foreach ($latestNotices as $notice)
+                        <li class="p-4 rounded-lg bg-base-100 shadow flex flex-col gap-1">
+                            <div class="flex items-center gap-2">
+                                <span class="badge {{ $notice->target_type === 'all' ? 'badge-primary' : 'badge-secondary' }}">
+                                    {{ $notice->target_type === 'all' ? 'All' : 'Specific' }}
+                                </span>
+                                <span class="font-bold text-lg">{{ $notice->title }}</span>
+                            </div>
+                            <div class="text-base-content/80">{{ $notice->content }}</div>
+                            <div class="text-xs text-base-content/60 mt-1">
+                                By: {{ $notice->creator->name ?? 'Unknown' }} |
+                                {{ $notice->created_at->format('d M Y H:i') }}
+                            </div>
+                        </li>
+                    @endforeach
+                </ul>
+            @else
+                <div class="alert alert-info mt-2">No notices available.</div>
+            @endif
+        </div>
     </div>
 
     <!-- Performance Statistics -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        @can('Create Websites') 
         <div class="card bg-base-100 shadow">
             <div class="card-body flex flex-row items-center justify-between">
                 <div>
@@ -64,7 +93,8 @@
                 </div>
             </div>
         </div>
-        <div class="card bg-base-100 shadow">
+        @endcan     <div class="card bg-base-100 shadow">
+            @can('Create Ads')
             <div class="card-body flex flex-row items-center justify-between">
                 <div>
                     <h5 class="card-title mb-1">
@@ -83,8 +113,11 @@
                     </div>
                 </div>
             </div>
+            @endcan
         </div>
+        @can('Create Websites')
         <div class="card bg-base-100 shadow">
+       
             <div class="card-body flex flex-row items-center justify-between">
                 <div>
                     <h5 class="card-title mb-1">Project Performance</h5>
@@ -98,7 +131,9 @@
                 </div>
             </div>
         </div>
+        @endcan
         <div class="card bg-base-100 shadow">
+            @can('Create Ads')
             <div class="card-body flex flex-row items-center justify-between">
                 <div>
                     <h5 class="card-title mb-1">Campaign Performance</h5>
@@ -111,6 +146,7 @@
                     </div>
                 </div>
             </div>
+            @endcan
         </div>
     </div>
 

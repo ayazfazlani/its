@@ -69,6 +69,7 @@
                             </tr>
                         </thead>
                         <tbody>
+                            @if(Auth::user()->hasRole(['Admin','Manager']))
                             @foreach ($notices as $notice)
                                 <tr>
                                     <td>{{ $notice->title }}</td>
@@ -93,6 +94,34 @@
                                     </td>
                                 </tr>
                             @endforeach
+                            @endif
+                            @if(Auth::user()->hasRole(['Web Designer','Digital Marketer','SEO Specialist','Customer Support']))
+ {{-- {{ dd($notices) }} --}}
+ @foreach ($notices as $notice)
+ <tr>
+     <td>{{ $notice->notice->title }}</td>
+     <td>{{ $notice->notice->content }}</td>
+     <td>
+         <div class="flex flex-wrap gap-1">
+             {{-- @foreach ($notice->user as $user) --}}
+                 <span class="badge badge-info">{{ $notice->user->name }}</span>
+             {{-- @endforeach --}}
+         </div>
+     </td>
+     <td>{{ $notice->notice->created_at->format('d M, Y H:i') }}</td>
+     <td>
+         <div class="flex gap-1">
+             @can('Send Notice')
+             <button class="btn btn-sm btn-primary"
+                 wire:click="edit({{ $notice->id }})">Edit</button>
+             <button class="btn btn-sm btn-error"
+                 wire:click="delete({{ $notice->id }})">Delete</button>
+                 @endcan
+         </div>
+     </td>
+ </tr>
+@endforeach
+@endif
                         </tbody>
                     </table>
                 </div>
