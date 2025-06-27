@@ -61,7 +61,7 @@ class PauseAds extends Component
         ]);
 
         if ($this->editingId) {
-            $ad = Marketing::findOrFail($this->editingId);
+            $ad = Marketing::with(['employee.user'])->findOrFail($this->editingId);
             $ad->update([
                 'name' => $this->name,
                 'employee_id' => $this->employeeId,
@@ -95,7 +95,20 @@ class PauseAds extends Component
         $this->dispatch('pop');
         $this->dispatch('showAlert', 'success', $message);
 
-        $this->mount();
+        // Reload advertisements with eager loading
+        $user = Auth::user();
+        $isAdminOrManagerOrSupport = method_exists($user, 'hasRole')
+            ? ($user->hasRole('Admin') || $user->hasRole('Manager') || $user->hasRole('Customer Support'))
+            : ($user->role === 'Admin' || $user->role === 'Manager' || $user->role === 'Customer Support' || $user->id === 1);
+        if ($isAdminOrManagerOrSupport) {
+            $this->advertisements = Marketing::with(['employee.user'])->where('status', 'pause')->get();
+            $this->employees = Employee::with('user')->get();
+        } else {
+            $employee = Employee::with('user')->where('user_id', Auth::id())->first();
+            $this->advertisements = Marketing::with(['employee.user'])->where('status', 'pause')
+                ->where('employee_id', $employee?->id)->get();
+            $this->employees = Employee::with('user')->where('user_id', Auth::id())->get();
+        }
     }
 
     public function edit($id)
@@ -122,7 +135,20 @@ class PauseAds extends Component
         $ad->delete();
 
         $this->dispatch('showAlert', 'success', 'Advertisement deleted successfully!');
-        $this->mount();
+        // Reload advertisements with eager loading
+        $user = Auth::user();
+        $isAdminOrManagerOrSupport = method_exists($user, 'hasRole')
+            ? ($user->hasRole('Admin') || $user->hasRole('Manager') || $user->hasRole('Customer Support'))
+            : ($user->role === 'Admin' || $user->role === 'Manager' || $user->role === 'Customer Support' || $user->id === 1);
+        if ($isAdminOrManagerOrSupport) {
+            $this->advertisements = Marketing::with(['employee.user'])->where('status', 'pause')->get();
+            $this->employees = Employee::with('user')->get();
+        } else {
+            $employee = Employee::with('user')->where('user_id', Auth::id())->first();
+            $this->advertisements = Marketing::with(['employee.user'])->where('status', 'pause')
+                ->where('employee_id', $employee?->id)->get();
+            $this->employees = Employee::with('user')->where('user_id', Auth::id())->get();
+        }
     }
 
     protected function resetForm()

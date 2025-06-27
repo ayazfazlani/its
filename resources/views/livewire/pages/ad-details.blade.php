@@ -103,7 +103,7 @@
             <tbody>
                 @foreach($adDetails as $detail)
                     <tr>
-                        <td>{{ $detail->marketing->name ?? '-' }}</td>
+                        <td>{{ optional($detail->marketing)->name ?? '-' }}</td>
                         <td>{{ $detail->clicks }}</td>
                         <td>{{ $detail->calls }}</td>
                         <td>{{ $detail->budget_spent }}</td>

@@ -51,7 +51,7 @@ Route::middleware(['auth'])->group(function (): void {
     Route::get('', function () {
         $user = Auth::user();
 
-        if ($user->hasRole('Admin')) {
+        if ($user->hasRole(['Admin','Manager'])) {
             return redirect()->route('home');
         } else {
             return redirect()->route('dashboard');

@@ -10,9 +10,9 @@
         class="border-r border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 lg:dark:bg-zinc-900/50">
         <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
 
-        <a href="{{ route('home') }}" class="mr-5 flex items-center space-x-2">
-            <x-app-logo class="size-8"></x-app-logo>
-            <span class="font-bold">ERMS</span>
+        <a href="#" class="mr-5 flex items-center space-x-2">
+            <x-app-logo class="h-10 w-20"></x-app-logo>
+            {{-- <span class="font-bold">ERMS</span> --}}
         </a>
 
         <flux:navlist variant="outline">
@@ -95,6 +95,14 @@
         </flux:navlist>
 
         <flux:spacer />
+        @auth
+            <form method="POST" action="{{ route('logout') }}" class="w-full">
+                @csrf
+                <flux:navlist.item as="button" type="submit" icon="arrow-right-start-on-rectangle" class="w-full text-left">
+                    {{ __('global.log_out') }}
+                </flux:navlist.item>
+            </form>
+        @endauth
 
         <!-- Impersonation Notice -->
         @if (Session::has('admin_user_id'))

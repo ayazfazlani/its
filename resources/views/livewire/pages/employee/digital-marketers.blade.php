@@ -137,7 +137,7 @@
             <tbody>
                 @forelse ($employees as $employee)
                     <tr>
-                        <td>{{ $employee->user->name }}</td>
+                        <td>{{ optional($employee->user)->name ?? '-' }}</td>
                         <td>{{ $employee->branch->name }}</td>
                         <td>{{ $employee->department }}</td>
                         <td>{{ $employee->position }}</td>

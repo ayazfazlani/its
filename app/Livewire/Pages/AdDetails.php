@@ -43,7 +43,7 @@ class AdDetails extends Component
         ]);
 
         if ($this->editingId) {
-            $adDetail =  ModelsAdDetails::findOrFail($this->editingId);
+            $adDetail =  ModelsAdDetails::with('marketing')->findOrFail($this->editingId);
             $adDetail->update([
                 'marketing_id' => $this->marketingId,
                 'clicks' => $this->clicks,
@@ -63,13 +63,15 @@ class AdDetails extends Component
 
         $this->resetForm();
         $this->showModal = false;
-        $this->mount($this->marketingId);
+        $this->adDetails = ModelsAdDetails::with('marketing')
+            ->when($this->marketingId, fn($q) => $q->where('marketing_id', $this->marketingId))
+            ->get();
         $this->dispatch('showAlert', 'success', 'Ad detail saved!');
     }
 
     public function edit($id)
     {
-        $adDetail =  ModelsAdDetails::findOrFail($id);
+        $adDetail =  ModelsAdDetails::with('marketing')->findOrFail($id);
         $this->editingId = $adDetail->id;
         $this->marketingId = $adDetail->marketing_id;
         $this->clicks = $adDetail->clicks;
@@ -81,8 +83,10 @@ class AdDetails extends Component
 
     public function delete($id)
     {
-         ModelsAdDetails::findOrFail($id)->delete();
-        $this->mount($this->marketingId);
+         ModelsAdDetails::with('marketing')->findOrFail($id)->delete();
+        $this->adDetails = ModelsAdDetails::with('marketing')
+            ->when($this->marketingId, fn($q) => $q->where('marketing_id', $this->marketingId))
+            ->get();
         $this->dispatch('showAlert', 'success', 'Ad detail deleted!');
     }
 
@@ -106,10 +110,10 @@ class AdDetails extends Component
     #[Title('Ad Details')]
     public function render()
     {
-        // $adDetails = ModelsAdDetails::with('marketing')
-        //     ->where('marketing_id', $this->marketingId)
-        //     ->latest()
-        //     ->paginate(10);
+        // Always eager load marketing in render as well
+        $this->adDetails = ModelsAdDetails::with('marketing')
+            ->when($this->marketingId, fn($q) => $q->where('marketing_id', $this->marketingId))
+            ->get();
 
         return view('livewire.pages.ad-details', [
             'adDetails' => $this->adDetails,

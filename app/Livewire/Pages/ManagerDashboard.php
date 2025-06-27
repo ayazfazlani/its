@@ -38,12 +38,23 @@ class ManagerDashboard extends Component
     if ($this->hasEmployeeRecord) {
       $this->department = $this->employee->department ?? 'Unknown';
     }
+    $this->recalculateAllMarketingPerformance();
     $this->loadDepartmentsStats();
     $this->loadRecentNotices();
     $this->loadEmployeeData();
     $this->loadPerformanceStats();
     $this->loadUpcomingDeadlines();
     $this->loadRecentActivities();
+  }
+
+  /**
+   * Recalculate performance for all Marketing records to ensure dashboard accuracy.
+   */
+  public function recalculateAllMarketingPerformance()
+  {
+    foreach (Marketing::all() as $marketing) {
+      $marketing->calculatePerformance();
+    }
   }
 
   public function loadTeamStats()
@@ -118,7 +129,9 @@ class ManagerDashboard extends Component
         'total_projects' => webdesign::where('employee_id', $this->employee->id)->count(),
         'completed_projects' => webdesign::where('employee_id', $this->employee->id)->where('status', 'completed')->count(),
         'total_campaigns' => Marketing::where('employee_id', $this->employee->id)->count(),
-        'active_campaigns' => Marketing::where('employee_id', $this->employee->id)->where('status', 'active')->count(),
+        'active_campaigns' => Marketing::where('employee_id', $this->employee->id)
+        // ->where('status', 'active')
+        ->count(),
         'avg_performance' => webdesign::where('employee_id', $this->employee->id)->avg('performance') ?? 0,
         'avg_campaign_performance' => Marketing::where('employee_id', $this->employee->id)->avg('performance') ?? 0
       ];
