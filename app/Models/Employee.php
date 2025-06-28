@@ -11,7 +11,6 @@ class Employee extends Model
   use SoftDeletes, HasRoles;
 
   protected $fillable = [
-    'di',
     'user_id',
     'branch_id',
     'department',
@@ -22,6 +21,8 @@ class Employee extends Model
     'address',
     'status'
   ];
+
+  protected $guarded = [];
 
   protected $casts = [
     'joining_date' => 'date',

@@ -31,13 +31,11 @@ class EmployeesList extends Component
             'department' => 'required|string|max:255',
             'position' => 'required|string|max:255',
             'joiningDate' => 'required|date',
-            'employeeId' => 'nullable',
             'cnic' => 'required|string|min:10|unique:employees,cnic',
             'phone' => 'required|string|max:20',
             'address' => 'required|string|max:500',
         ]);
 
-        // Generate proper employee ID (better than rand()
         $data = [
             'user_id' => $this->userId,
             'branch_id' => $this->branchId,
@@ -45,12 +43,10 @@ class EmployeesList extends Component
             'position' => $this->position,
             'joining_date' => $this->joiningDate,
             'cnic' => $this->cnic,
-            'employee_id' => $this->employeeId,
             'phone' => $this->phone,
             'address' => $this->address,
             'status' => $this->status
         ];
-        // dd($data);
         Employee::create($data);
         $this->resetForm();
         $this->showModal = false;

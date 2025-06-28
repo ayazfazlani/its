@@ -31,7 +31,6 @@ class SeoSpecialist extends Component
             'department' => 'required|string|max:255',
             'position' => 'required|string|max:255',
             'joiningDate' => 'required|date',
-            'employeeId' => 'nullable',
             'cnic' => 'required|string|min:10|unique:employees,cnic',
             'phone' => 'required|string|max:20',
             'address' => 'required|string|max:500',
@@ -44,7 +43,6 @@ class SeoSpecialist extends Component
             'position' => $this->position,
             'joining_date' => $this->joiningDate,
             'cnic' => $this->cnic,
-            'employee_id' => $this->employeeId,
             'phone' => $this->phone,
             'address' => $this->address,
             'status' => $this->status

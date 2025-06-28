@@ -5,14 +5,14 @@
             <p class="text-gray-500">Create, edit, and delete employees.</p>
         </div>
         <div class="flex gap-2">
-            @can('Add Employee')
+            {{-- @can('Add Employee')
                 <button class="btn btn-primary" wire:click="popUp">
                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                     </svg>
                     Add Employee
                 </button>
-            @endcan
+            @endcan --}}
         </div>
     </div>
 
@@ -148,8 +148,7 @@
                         <td>{{ $employee->status }}</td>
                         <td class="text-right space-x-2">
                             @can('Edit Employee')
-                                <button class="btn btn-sm btn-outline"
-                                    wire:click="edit({{ $employee->id }})">Edit</button>
+                                <button class="btn btn-sm btn-outline" wire:click="edit({{ $employee->id }})">Edit</button>
                             @endcan
                             @can('Delete Employee')
                                 <button class="btn btn-sm btn-error"
