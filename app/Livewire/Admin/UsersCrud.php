@@ -69,7 +69,7 @@ class UsersCrud extends Component
     $this->userId = $user->id;
     $this->name = $user->name;
     $this->email = $user->email;
-    $this->selectedRoles = $user->roles->pluck('name')->toArray();
+    $this->selectedRoles = $user->roles->pluck('id')->toArray();
     $this->isEdit = true;
     $this->showModal = true;
   }
