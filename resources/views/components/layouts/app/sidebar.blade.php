@@ -57,17 +57,18 @@
                     <flux:navlist.item icon="stop-circle" href="{{ route('ads.inActive') }}" :current="request()->routeIs('ads.inActive')">Overdue Ads</flux:navlist.item>
                     <flux:navlist.item icon="chart-bar" href="{{ route('ads.clientleft') }}" :current="request()->routeIs('ads.clientleft')">Clients Left</flux:navlist.item>
                 </flux:navlist.group>
-
+@can('can see ads pyment status')
                 <flux:navlist.group heading="Ads Payments" class="grid">
                     <flux:navlist.item icon="check-circle" href="{{ route('ads.pymtclrd') }}" :current="request()->routeIs('ads.pymtclrd')">Full Clear</flux:navlist.item>
                     <flux:navlist.item icon="adjustments-vertical" href="{{ route('ads.pymthalfclrd') }}" :current="request()->routeIs('ads.pymthalfclrd')">Half Clear</flux:navlist.item>
                     <flux:navlist.item icon="x-circle" href="{{ route('ads.pymtuncleared') }}" :current="request()->routeIs('ads.pymtuncleared')">Uncleared</flux:navlist.item>
                 </flux:navlist.group>
+@endcan
             @endcan
 
             <!-- Notices -->
             <flux:navlist.group heading="Notices" class="grid">
-                @can('View Notice')
+                @can('View notice')
                     <flux:navlist.item icon="megaphone" href="{{ route('notices.all') }}" :current="request()->routeIs('notices.all')">Notice for All</flux:navlist.item>
                     <flux:navlist.item icon="speaker-wave" href="{{ route('notices.specific') }}" :current="request()->routeIs('notices.specific')">Notice for @if(auth()->user()->hasRole(['Manager','Admin'])) Specific @else Me @endif</flux:navlist.item>
                 @endcan

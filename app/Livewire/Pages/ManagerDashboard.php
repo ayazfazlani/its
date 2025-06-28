@@ -33,11 +33,15 @@ class ManagerDashboard extends Component
   {
     $this->user = Auth::user();
     $this->isManagerOrAdmin = $this->user->hasAnyRole(['Manager', 'Admin']);
-    $this->employee = $this->user->employee ?? null;
+
+    // Properly load employee record with user relationship
+    $this->employee = Employee::with('user')->where('user_id', $this->user->id)->first();
     $this->hasEmployeeRecord = $this->employee !== null;
+
     if ($this->hasEmployeeRecord) {
       $this->department = $this->employee->department ?? 'Unknown';
     }
+
     $this->recalculateAllMarketingPerformance();
     $this->loadDepartmentsStats();
     $this->loadRecentNotices();
@@ -93,22 +97,29 @@ class ManagerDashboard extends Component
   public function loadEmployeeData()
   {
     if ($this->isManagerOrAdmin) {
-      $this->myProjects = webdesign::orderBy('created_at', 'desc')->take(5)->get();
-      $this->myCampaigns = Marketing::orderBy('created_at', 'desc')->take(5)->get();
-      $this->departmentStats = Employee::selectRaw('department, status, COUNT(*) as count')
-        ->groupBy('department', 'status')
+      $this->myProjects = webdesign::with(['employee.user'])->orderBy('created_at', 'desc')->take(5)->get();
+      $this->myCampaigns = Marketing::with(['employee.user'])->orderBy('created_at', 'desc')->take(5)->get();
+
+      // Fix the department stats query to include all necessary columns
+      $this->departmentStats = Employee::with('user')
+        ->select('department', 'status', 'user_id')
+        ->groupBy('department', 'status', 'user_id')
         ->get()
         ->groupBy('department');
     } elseif ($this->employee) {
-      $this->myProjects = webdesign::where('employee_id', $this->employee->id)
+      $this->myProjects = webdesign::with(['employee.user'])->where('employee_id', $this->employee->id)
         ->orderBy('created_at', 'desc')->take(5)->get();
-      $this->myCampaigns = Marketing::where('employee_id', $this->employee->id)
+      $this->myCampaigns = Marketing::with(['employee.user'])->where('employee_id', $this->employee->id)
         ->orderBy('created_at', 'desc')->take(5)->get();
-      $this->departmentStats = Employee::where('department', $this->department)
-        ->selectRaw('status, COUNT(*) as count')
-        ->groupBy('status')
+
+      // Fix the department stats query to include all necessary columns
+      $this->departmentStats = Employee::with('user')
+        ->where('department', $this->department)
+        ->select('status', 'user_id')
+        ->groupBy('status', 'user_id')
         ->get()
-        ->pluck('count', 'status')
+        ->pluck('status')
+        ->countBy()
         ->toArray();
     }
   }
@@ -130,8 +141,8 @@ class ManagerDashboard extends Component
         'completed_projects' => webdesign::where('employee_id', $this->employee->id)->where('status', 'completed')->count(),
         'total_campaigns' => Marketing::where('employee_id', $this->employee->id)->count(),
         'active_campaigns' => Marketing::where('employee_id', $this->employee->id)
-        // ->where('status', 'active')
-        ->count(),
+          // ->where('status', 'active')
+          ->count(),
         'avg_performance' => webdesign::where('employee_id', $this->employee->id)->avg('performance') ?? 0,
         'avg_campaign_performance' => Marketing::where('employee_id', $this->employee->id)->avg('performance') ?? 0
       ];
@@ -143,7 +154,7 @@ class ManagerDashboard extends Component
     if ($this->employee) {
       $this->upcomingDeadlines = collect();
       if ($this->isManagerOrAdmin) {
-        $projectDeadlines = webdesign::where('status', 'in_progress')
+        $projectDeadlines = webdesign::with(['employee.user'])->where('status', 'in_progress')
           ->where('end_date', '>=', now())
           ->where('end_date', '<=', now()->addDays(7))
           ->get()
@@ -158,7 +169,7 @@ class ManagerDashboard extends Component
         // Add campaign deadlines for all employees if needed
         $this->upcomingDeadlines = $projectDeadlines;
       } else {
-        $projectDeadlines = webdesign::where('employee_id', $this->employee->id)
+        $projectDeadlines = webdesign::with(['employee.user'])->where('employee_id', $this->employee->id)
           ->where('status', 'in_progress')
           ->where('end_date', '>=', now())
           ->where('end_date', '<=', now()->addDays(7))
@@ -181,7 +192,7 @@ class ManagerDashboard extends Component
     if ($this->employee) {
       $this->recentActivities = collect();
       if ($this->isManagerOrAdmin) {
-        $projectActivities = webdesign::orderBy('updated_at', 'desc')
+        $projectActivities = webdesign::with(['employee.user'])->orderBy('updated_at', 'desc')
           ->take(3)
           ->get()
           ->map(function ($project) {
@@ -193,7 +204,7 @@ class ManagerDashboard extends Component
               'status' => $project->status
             ];
           });
-        $campaignActivities = Marketing::orderBy('updated_at', 'desc')
+        $campaignActivities = Marketing::with(['employee.user'])->orderBy('updated_at', 'desc')
           ->take(3)
           ->get()
           ->map(function ($campaign) {
@@ -210,7 +221,7 @@ class ManagerDashboard extends Component
           ->take(5);
       } else {
         if ($this->department === 'web design') {
-          $this->recentActivities = webdesign::where('employee_id', $this->employee->id)
+          $this->recentActivities = webdesign::with(['employee.user'])->where('employee_id', $this->employee->id)
             ->orderBy('updated_at', 'desc')
             ->take(5)
             ->get()
@@ -224,7 +235,7 @@ class ManagerDashboard extends Component
               ];
             });
         } elseif ($this->department === 'digital marketing') {
-          $this->recentActivities = Marketing::where('employee_id', $this->employee->id)
+          $this->recentActivities = Marketing::with(['employee.user'])->where('employee_id', $this->employee->id)
             ->orderBy('updated_at', 'desc')
             ->take(5)
             ->get()
@@ -248,12 +259,12 @@ class ManagerDashboard extends Component
       $departments = Employee::select('department')->distinct()->pluck('department');
       $this->departmentsStats = [];
       foreach ($departments as $dept) {
-        $total = Employee::where('department', $dept)->count();
-        $active = Employee::where('department', $dept)->where('status', 'active')->count();
-        $projects = \App\Models\webdesign::whereHas('employee', function($q) use ($dept) {
+        $total = Employee::with('user')->where('department', $dept)->count();
+        $active = Employee::with('user')->where('department', $dept)->where('status', 'active')->count();
+        $projects = \App\Models\webdesign::with(['employee.user'])->whereHas('employee', function ($q) use ($dept) {
           $q->where('department', $dept);
         })->count();
-        $campaigns = \App\Models\Marketing::whereHas('employee', function($q) use ($dept) {
+        $campaigns = \App\Models\Marketing::with(['employee.user'])->whereHas('employee', function ($q) use ($dept) {
           $q->where('department', $dept);
         })->count();
         $this->departmentsStats[$dept] = [
@@ -266,12 +277,12 @@ class ManagerDashboard extends Component
     } elseif ($this->employee) {
       // Only their own department
       $dept = $this->department;
-      $total = Employee::where('department', $dept)->count();
-      $active = Employee::where('department', $dept)->where('status', 'active')->count();
-      $projects = \App\Models\webdesign::whereHas('employee', function($q) use ($dept) {
+      $total = Employee::with('user')->where('department', $dept)->count();
+      $active = Employee::with('user')->where('department', $dept)->where('status', 'active')->count();
+      $projects = \App\Models\webdesign::with(['employee.user'])->whereHas('employee', function ($q) use ($dept) {
         $q->where('department', $dept);
       })->count();
-      $campaigns = \App\Models\Marketing::whereHas('employee', function($q) use ($dept) {
+      $campaigns = \App\Models\Marketing::with(['employee.user'])->whereHas('employee', function ($q) use ($dept) {
         $q->where('department', $dept);
       })->count();
       $this->departmentsStats[$dept] = [

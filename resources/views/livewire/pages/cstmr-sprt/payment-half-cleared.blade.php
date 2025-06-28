@@ -2,16 +2,18 @@
     <section class="w-full p-6">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
             <div>
-                <h1 class="text-2xl font-bold">Payment Halfcleared Advertisements</h1>
+                <h1 class="text-2xl font-bold">Payment Cleared Advertisements</h1>
                 <p class="text-gray-500">Manage and track advertisements with cleared payments.</p>
             </div>
             <div class="flex gap-2">
-                <button class="btn btn-primary" wire:click="popUp">
-                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                    </svg>
-                    Add Advertisement
-                </button>
+                @can('can create ads with payment status')
+                    <button class="btn btn-primary" wire:click="popUp">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Add Advertisement
+                    </button>
+                @endcan
             </div>
         </div>
         <!-- Modal -->
@@ -189,10 +191,14 @@
                             <td>{{ $ad->payment_clearance_date ? \Carbon\Carbon::parse($ad->payment_clearance_date)->format('d M, Y') : '-' }}
                             </td>
                             <td class="text-right space-x-2">
-                                <button class="btn btn-sm btn-outline"
-                                    wire:click="edit({{ $ad->id }})">Edit</button>
-                                <button class="btn btn-sm btn-error"
-                                    wire:click="delete({{ $ad->id }})">Delete</button>
+                                @can('can edit ads paymet status')
+                                    <button class="btn btn-sm btn-outline"
+                                        wire:click="edit({{ $ad->id }})">Edit</button>
+                                @endcan
+                                @can('can delete ads with payment status')
+                                    <button class="btn btn-sm btn-error"
+                                        wire:click="delete({{ $ad->id }})">Delete</button>
+                                @endcan
                             </td>
                         </tr>
                     @endforeach
