@@ -34,7 +34,8 @@
                         <select wire:model.defer="employeeId" class="select select-bordered w-full">
                             <option value="">Select Employee</option>
                             @foreach ($employees as $employee)
-                                <option value="{{ $employee->id }}">{{ $employee->user->name }}</option>
+                                <option value="{{ $employee->id }}">{{ optional($employee->user)->name ?? 'Unknown' }}
+                                </option>
                             @endforeach
                         </select>
                         @error('employeeId')

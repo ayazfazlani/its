@@ -69,12 +69,26 @@ class DeliveredSites extends Component
     {
         $this->resetValidation();
         $this->reset(['editingId', 'employeeId', 'projectName', 'websiteUrl', 'category', 'status', 'description', 'toolsUsed', 'startDate', 'endDate', 'performance', 'reason']);
+        $user = Auth::user();
+        $isAdminOrManager = $user && ($user->hasRole('Admin') || $user->hasRole('Manager'));
+        if ($isAdminOrManager) {
+            $this->employees = Employee::with('user')->get();
+        } else {
+            $this->employees = Employee::with('user')->where('user_id', Auth::id())->get();
+        }
         $this->showModal = true;
     }
 
     public function popUpHide()
     {
         $this->showModal = false;
+        $user = Auth::user();
+        $isAdminOrManager = $user && ($user->hasRole('Admin') || $user->hasRole('Manager'));
+        if ($isAdminOrManager) {
+            $this->employees = Employee::with('user')->get();
+        } else {
+            $this->employees = Employee::with('user')->where('user_id', Auth::id())->get();
+        }
     }
 
     public function save()

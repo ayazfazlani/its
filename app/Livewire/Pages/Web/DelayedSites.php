@@ -73,12 +73,26 @@ class DelayedSites extends Component
     {
         $this->resetValidation();
         $this->reset(['editingId', 'employeeId', 'projectName', 'websiteUrl', 'category', 'status', 'description', 'toolsUsed', 'startDate', 'endDate', 'performance', 'reason']);
+        $user = Auth::user();
+        $isAdminOrManager = method_exists($user, 'hasRole') ? ($user->hasRole('Admin') || $user->hasRole('Manager')) : ($user->role === 'Admin' || $user->role === 'Manager' || $user->id === 1);
+        if ($isAdminOrManager) {
+            $this->employees = Employee::with('user')->get();
+        } else {
+            $this->employees = Employee::with('user')->where('user_id', Auth::id())->get();
+        }
         $this->showModal = true;
     }
 
     public function popUpHide()
     {
         $this->showModal = false;
+        $user = Auth::user();
+        $isAdminOrManager = method_exists($user, 'hasRole') ? ($user->hasRole('Admin') || $user->hasRole('Manager')) : ($user->role === 'Admin' || $user->role === 'Manager' || $user->id === 1);
+        if ($isAdminOrManager) {
+            $this->employees = Employee::with('user')->get();
+        } else {
+            $this->employees = Employee::with('user')->where('user_id', Auth::id())->get();
+        }
     }
 
     public function save()

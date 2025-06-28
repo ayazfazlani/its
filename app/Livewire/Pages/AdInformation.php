@@ -29,16 +29,17 @@ class AdInformation extends Component
     {
         $employee = Employee::with('user')->where('user_id', Auth::id())->first();
         $user = Auth::user();
-        $isAdminOrManagerOrSupport = method_exists($user, 'hasRole')
-            ? ($user->hasRole('Admin') || $user->hasRole('Manager') || $user->hasRole('Customer Support'))
-            : ($user->role === 'Admin' || $user->role === 'Manager' || $user->role === 'Customer Support' || $user->id === 1);
-        if ($isAdminOrManagerOrSupport) {
+
+        if ($user->hasRole(['Admin', 'Manager'])) {
+
             $this->advertisements = Marketing::with(['employee.user'])->where('status', 'active')->get();
             $this->employees = Employee::with('user')->get();
+            // dd($this->employees);
         } else {
             $this->advertisements = Marketing::with(['employee.user'])->where('status', 'active')
                 ->where('employee_id', $employee?->id)->get();
             $this->employees = Employee::with('user')->where('user_id', Auth::id())->get();
+            // dd($this->employees);
         }
     }
 
@@ -159,6 +160,15 @@ class AdInformation extends Component
     public function popUp()
     {
         $this->resetForm();
+
+        // Ensure employees are properly loaded with user relationship
+        $user = Auth::user();
+        if ($user->hasRole(['Admin', 'Manager'])) {
+            $this->employees = Employee::with('user')->get();
+        } else {
+            $this->employees = Employee::with('user')->where('user_id', Auth::id())->get();
+        }
+
         $this->showModal = true;
     }
 
@@ -166,6 +176,14 @@ class AdInformation extends Component
     {
         $this->showModal = false;
         $this->resetForm();
+
+        // Reload employees to ensure they're properly loaded
+        $user = Auth::user();
+        if ($user->hasRole(['Admin', 'Manager'])) {
+            $this->employees = Employee::with('user')->get();
+        } else {
+            $this->employees = Employee::with('user')->where('user_id', Auth::id())->get();
+        }
     }
     #[Title('Ads Compaigns')]
     public function render()

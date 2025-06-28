@@ -136,6 +136,15 @@ class ClientLeft extends Component
     public function popUp()
     {
         $this->resetForm();
+
+        // Ensure employees are properly loaded with user relationship
+        $user = Auth::user();
+        if ($user->hasRole(['Admin', 'Manager'])) {
+            $this->employees = Employee::with('user')->get();
+        } else {
+            $this->employees = Employee::with('user')->where('user_id', Auth::id())->get();
+        }
+
         $this->showModal = true;
     }
 
@@ -143,6 +152,14 @@ class ClientLeft extends Component
     {
         $this->showModal = false;
         $this->resetForm();
+
+        // Reload employees to ensure they're properly loaded
+        $user = Auth::user();
+        if ($user->hasRole(['Admin', 'Manager'])) {
+            $this->employees = Employee::with('user')->get();
+        } else {
+            $this->employees = Employee::with('user')->where('user_id', Auth::id())->get();
+        }
     }
 
     #[Title('Google Ads Client Left')]
