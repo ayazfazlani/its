@@ -4,7 +4,7 @@ namespace App\Livewire\Pages;
 
 use Livewire\Component;
 use App\Models\Employee;
-use App\Models\Webdesign;
+use App\Models\webdesign as Webdesign;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Auth;
 
