@@ -63,13 +63,19 @@ class RolesCrud extends Component
   public function saveRole()
   {
     $this->validate();
+
+    // Ensure selectedPermissions contains only valid permission IDs
+    $validPermissionIds = Permission::pluck('id')->toArray();
+    $this->selectedPermissions = array_filter($this->selectedPermissions, function ($permissionId) use ($validPermissionIds) {
+      return in_array((int)$permissionId, $validPermissionIds);
+    });
+
     if ($this->isEdit && $this->roleId) {
       $role = Role::findOrFail($this->roleId);
       $role->update(['name' => $this->name]);
     } else {
       $role = Role::create(['name' => $this->name]);
     }
-    // dd($this->selectedPermissions);
     $role->syncPermissions($this->selectedPermissions);
     $this->showModal = false;
     $this->resetForm();

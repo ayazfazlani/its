@@ -77,16 +77,51 @@ class UsersCrud extends Component
   public function saveUser()
   {
     $this->validate();
+
+    // Debug: Log what's being passed
+    \Log::info('UsersCrud saveUser - selectedRoles before processing:', $this->selectedRoles);
+
+    // Ensure selectedRoles contains only valid role IDs and convert to integers
+    $validRoleIds = Role::pluck('id')->toArray();
+    \Log::info('UsersCrud saveUser - validRoleIds:', $validRoleIds);
+
+    $this->selectedRoles = array_filter($this->selectedRoles, function ($roleId) use ($validRoleIds) {
+      return in_array((int)$roleId, $validRoleIds);
+    });
+
+    // Convert all role IDs to integers
+    $roleIds = array_map('intval', $this->selectedRoles);
+
+    \Log::info('UsersCrud saveUser - roleIds after processing:', $roleIds);
+
+    // Get role names for fallback
+    $roleNames = Role::whereIn('id', $roleIds)->pluck('name')->toArray();
+    \Log::info('UsersCrud saveUser - roleNames for fallback:', $roleNames);
+
     if ($this->isEdit && $this->userId) {
       $user = User::findOrFail($this->userId);
-      $user->syncRoles($this->selectedRoles);
+      try {
+        // Try with role IDs first
+        $user->syncRoles($roleIds);
+      } catch (\Exception $e) {
+        \Log::error('UsersCrud saveUser - Error with role IDs, trying with names:', ['error' => $e->getMessage()]);
+        // Fallback to role names
+        $user->syncRoles($roleNames);
+      }
     } else {
       $user = User::create([
         'name' => $this->name,
         'email' => $this->email,
         'password' => Hash::make($this->password),
       ]);
-      $user->syncRoles($this->selectedRoles);
+      try {
+        // Try with role IDs first
+        $user->syncRoles($roleIds);
+      } catch (\Exception $e) {
+        \Log::error('UsersCrud saveUser - Error with role IDs, trying with names:', ['error' => $e->getMessage()]);
+        // Fallback to role names
+        $user->syncRoles($roleNames);
+      }
     }
     $this->showModal = false;
     $this->resetForm();
