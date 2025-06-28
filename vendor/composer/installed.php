@@ -5,20 +5,11 @@
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => 'e8be78967d271fefe639c95dce7f528b8e3ee293',
+        'reference' => '3181d5134eb4e1edf61bc04640fe7aa002708020',
         'name' => 'mortenebak/tallstarter',
         'dev' => true,
     ),
     'versions' => array(
-        'barryvdh/laravel-debugbar' => array(
-            'pretty_version' => 'v3.15.4',
-            'version' => '3.15.4.0',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../barryvdh/laravel-debugbar',
-            'aliases' => array(),
-            'reference' => 'c0667ea91f7185f1e074402c5788195e96bf8106',
-            'dev_requirement' => true,
-        ),
         'barryvdh/laravel-ide-helper' => array(
             'pretty_version' => 'v3.5.5',
             'version' => '3.5.5.0',
@@ -661,7 +652,7 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => 'e8be78967d271fefe639c95dce7f528b8e3ee293',
+            'reference' => '3181d5134eb4e1edf61bc04640fe7aa002708020',
             'dev_requirement' => false,
         ),
         'mtdowling/cron-expression' => array(
@@ -812,15 +803,6 @@
             'install_path' => __DIR__ . '/../phar-io/version',
             'aliases' => array(),
             'reference' => '4f7fd7836c6f332bb2933569e566a0d6c4cbed74',
-            'dev_requirement' => true,
-        ),
-        'php-debugbar/php-debugbar' => array(
-            'pretty_version' => 'v2.1.6',
-            'version' => '2.1.6.0',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../php-debugbar/php-debugbar',
-            'aliases' => array(),
-            'reference' => '16fa68da5617220594aa5e33fa9de415f94784a0',
             'dev_requirement' => true,
         ),
         'phpdocumentor/reflection-common' => array(
