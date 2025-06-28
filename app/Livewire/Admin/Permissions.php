@@ -9,8 +9,11 @@ use Livewire\Attributes\Session;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\Attributes\Title;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
+#[Title('Permissions Management')]
 class Permissions extends Component
 {
     use LivewireAlert;

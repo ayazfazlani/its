@@ -6,7 +6,9 @@ use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
+use Livewire\Attributes\Title;
 
+#[Title('View User')]
 class ViewUser extends Component
 {
     public User $user;

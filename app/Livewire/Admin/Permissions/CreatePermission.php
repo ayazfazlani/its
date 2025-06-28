@@ -7,8 +7,10 @@ use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Livewire\Attributes\Title;
 use Spatie\Permission\Models\Permission;
 
+#[Title('Create Permission')]
 class CreatePermission extends Component
 {
     use LivewireAlert;
@@ -29,7 +31,6 @@ class CreatePermission extends Component
         $this->flash('success', __('permissions.permission_created'));
 
         $this->redirect(route('admin.permissions.index'), true);
-
     }
 
     #[Layout('components.layouts.admin')]

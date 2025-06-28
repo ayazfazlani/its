@@ -7,8 +7,10 @@ use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Livewire\Attributes\Title;
 use Spatie\Permission\Models\Permission;
 
+#[Title('Edit Permission')]
 class EditPermission extends Component
 {
     use LivewireAlert;
@@ -39,7 +41,6 @@ class EditPermission extends Component
         $this->flash('success', __('permissions.permission_updated'));
 
         $this->redirect(route('admin.permissions.index'), true);
-
     }
 
     #[Layout('components.layouts.admin')]

@@ -7,7 +7,9 @@ use App\Models\Employee;
 use App\Models\webdesign as Webdesign;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Title;
 
+#[Title('Web Developers')]
 class WebDevelopers extends Component
 {
     use WithPagination;

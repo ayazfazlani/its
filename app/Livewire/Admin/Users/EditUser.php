@@ -11,7 +11,9 @@ use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Livewire\Features\SupportRedirects\HandlesRedirects;
 use Spatie\Permission\Models\Role;
+use Livewire\Attributes\Title;
 
+#[Title('Edit User')]
 class EditUser extends Component
 {
     use HandlesRedirects;
@@ -56,7 +58,7 @@ class EditUser extends Component
         ]);
 
         // Convert the userRoles to integers
-        $userRoles = Arr::map($this->userRoles, fn ($role): int => (int) $role);
+        $userRoles = Arr::map($this->userRoles, fn($role): int => (int) $role);
 
         // Sync the user roles
         $this->user->syncRoles($userRoles);
@@ -64,7 +66,6 @@ class EditUser extends Component
         $this->flash('success', __('users.user_updated'));
 
         $this->redirect(route('admin.users.index'), true);
-
     }
 
     #[Layout('components.layouts.admin')]

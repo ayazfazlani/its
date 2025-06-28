@@ -5,9 +5,12 @@ namespace App\Livewire\Admin;
 use App\Models\User;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\Attributes\Title;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules;
 
+#[Title('Users Management')]
 class UsersCrud extends Component
 {
   use WithPagination;

@@ -7,7 +7,9 @@ use App\Models\Employee;
 use App\Models\webdesign;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Title;
 
+#[Title('Delivered Sites')]
 class DeliveredSites extends Component
 {
     use WithPagination;

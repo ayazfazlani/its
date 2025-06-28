@@ -12,7 +12,9 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Spatie\Permission\Models\Role;
+use Livewire\Attributes\Title;
 
+#[Title('Create User')]
 class CreateUser extends Component
 {
     use LivewireAlert;
@@ -49,7 +51,7 @@ class CreateUser extends Component
         if ($this->selectedRoles !== []) {
             /** @var User $user */
             // Convert the userRoles to integers
-            $userRoles = Arr::map($this->selectedRoles, fn ($role): int => (int) $role);
+            $userRoles = Arr::map($this->selectedRoles, fn($role): int => (int) $role);
 
             // Sync the user roles
             $user->syncRoles($userRoles);
@@ -58,7 +60,6 @@ class CreateUser extends Component
         $this->flash('success', __('users.user_created'));
 
         $this->redirect(route('admin.users.index'), true);
-
     }
 
     #[Layout('components.layouts.admin')]

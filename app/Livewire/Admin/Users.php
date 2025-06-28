@@ -11,7 +11,11 @@ use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Spatie\Permission\Models\Role;
+use Livewire\Attributes\Title;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules;
 
+#[Title('Users')]
 class Users extends Component
 {
     use LivewireAlert;

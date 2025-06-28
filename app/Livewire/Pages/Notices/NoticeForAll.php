@@ -5,8 +5,9 @@ namespace App\Livewire\Pages\Notices;
 use Livewire\Component;
 use App\Models\Notice;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Title;
 
-
+#[Title('Notice For All')]
 class NoticeForAll extends Component
 {
     public $title = '';
@@ -69,7 +70,6 @@ class NoticeForAll extends Component
     {
         $notice = Notice::findOrFail($id);
         $notice->delete();
-
     }
 
     protected function resetForm()

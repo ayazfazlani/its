@@ -5,7 +5,7 @@
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '3181d5134eb4e1edf61bc04640fe7aa002708020',
+        'reference' => 'd751447c4482b7bf2c73ac24ba8f8762d0351e97',
         'name' => 'mortenebak/tallstarter',
         'dev' => true,
     ),
@@ -652,7 +652,7 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '3181d5134eb4e1edf61bc04640fe7aa002708020',
+            'reference' => 'd751447c4482b7bf2c73ac24ba8f8762d0351e97',
             'dev_requirement' => false,
         ),
         'mtdowling/cron-expression' => array(

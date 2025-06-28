@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Layouts;
+namespace App\Livewire\Pages\Layouts;
 
 use Carbon\Carbon;
 use Livewire\Component;
@@ -10,8 +10,9 @@ use App\Models\webdesign;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Layout;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Contracts\View\View;
 
-// #[Title('Employee Dashboard')]
+#[Title('Layouts Dashboard')]
 #[Layout('components.layouts.app')]
 class Index extends Component
 {

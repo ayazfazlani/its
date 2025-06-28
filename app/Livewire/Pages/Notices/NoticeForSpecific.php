@@ -7,8 +7,9 @@ use App\Models\Notice;
 use Livewire\Component;
 use App\Models\NoticeUser;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Title;
 
-
+#[Title('Notice For Specific')]
 class NoticeForSpecific extends Component
 {
   public $title = '';
@@ -88,7 +89,6 @@ class NoticeForSpecific extends Component
     $notice = Notice::findOrFail($id);
     $notice->users()->detach();
     $notice->delete();
-
   }
 
   protected function resetForm()

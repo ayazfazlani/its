@@ -10,7 +10,11 @@ use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Spatie\Permission\Models\Role;
+use Livewire\Attributes\Title;
+use App\Models\User;
+use Spatie\Permission\Models\Permission;
 
+#[Title('Roles Management')]
 class Roles extends Component
 {
     use LivewireAlert;

@@ -11,8 +11,9 @@ use Livewire\Attributes\Title;
 use Livewire\Attributes\Layout;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Notice;
+use Illuminate\Contracts\View\View;
 
-// #[Title('Employee Dashboard')]
+#[Title('Layouts Dashboard')]
 
 class Index extends Component
 {

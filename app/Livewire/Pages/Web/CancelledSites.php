@@ -7,7 +7,9 @@ use App\Models\Employee;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Auth;
 use App\Models\webdesign as Webdesign;
+use Livewire\Attributes\Title;
 
+#[Title('Cancelled Sites')]
 class CancelledSites extends Component
 {
     use WithPagination;

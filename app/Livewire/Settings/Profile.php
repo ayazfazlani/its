@@ -9,7 +9,9 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
+use Livewire\Attributes\Title;
 
+#[Title('Profile Settings')]
 class Profile extends Component
 {
     public string $name = '';

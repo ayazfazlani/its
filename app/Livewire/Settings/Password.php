@@ -9,7 +9,9 @@ use Illuminate\Validation\Rules\Password as PasswordRule;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
+use Livewire\Attributes\Title;
 
+#[Title('Password Settings')]
 class Password extends Component
 {
     public string $current_password = '';

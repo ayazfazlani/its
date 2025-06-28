@@ -7,8 +7,10 @@ use App\Models\Employee;
 use App\Models\Marketing;
 use App\Models\webdesign;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
 use Illuminate\Contracts\View\View;
 
+#[Title('Admin Dashboard')]
 class Index extends Component
 {
     public $totalEmployees;

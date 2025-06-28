@@ -4,9 +4,11 @@ namespace App\Livewire\Admin;
 
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\Attributes\Title;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
+#[Title('Roles CRUD')]
 class RolesCrud extends Component
 {
   use WithPagination;

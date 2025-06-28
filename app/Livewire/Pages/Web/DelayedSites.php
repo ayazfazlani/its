@@ -4,10 +4,12 @@ namespace App\Livewire\Pages\Web;
 
 use Livewire\Component;
 use App\Models\Employee;
-use App\Models\webdesign;
+use App\Models\webdesign as Webdesign;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Title;
 
+#[Title('Delayed Sites')]
 class DelayedSites extends Component
 {
 

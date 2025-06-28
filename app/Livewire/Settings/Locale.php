@@ -5,7 +5,9 @@ namespace App\Livewire\Settings;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
+use Livewire\Attributes\Title;
 
+#[Title('Locale Settings')]
 class Locale extends Component
 {
     public string $locale = '';
