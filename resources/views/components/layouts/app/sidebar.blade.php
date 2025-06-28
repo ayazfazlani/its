@@ -18,7 +18,7 @@
         <flux:navlist variant="outline">
             <!-- Dashboard -->
             <flux:navlist.group heading="Platform" class="grid">
-                @if(auth()->user()->hasRole(['Manager','Admin']))
+                @if(auth()->check() && auth()->user()->hasRole(['Manager','Admin']))
                     <flux:navlist.item icon="home" href="{{ route('home') }}" :current="request()->routeIs('home')">Dashboard</flux:navlist.item>
                 @else
                     <flux:navlist.item icon="home" href="{{ route('dashboard') }}" :current="request()->routeIs('dashboard')">Dashboard</flux:navlist.item>
@@ -70,7 +70,7 @@
             <flux:navlist.group heading="Notices" class="grid">
                 @can('View notice')
                     <flux:navlist.item icon="megaphone" href="{{ route('notices.all') }}" :current="request()->routeIs('notices.all')">Notice for All</flux:navlist.item>
-                    <flux:navlist.item icon="speaker-wave" href="{{ route('notices.specific') }}" :current="request()->routeIs('notices.specific')">Notice for @if(auth()->user()->hasRole(['Manager','Admin'])) Specific @else Me @endif</flux:navlist.item>
+                    <flux:navlist.item icon="speaker-wave" href="{{ route('notices.specific') }}" :current="request()->routeIs('notices.specific')">Notice for @if(auth()->check() && auth()->user()->hasRole(['Manager','Admin'])) Specific @else Me @endif</flux:navlist.item>
                 @endcan
                 @can('Send Notice')
               
@@ -115,7 +115,9 @@
                     @method('DELETE')
                     <p class="text-xs">
                         {{ __('users.you_are_impersonating') }}:
-                        <strong>{{ auth()->user()->name }}</strong>
+                        @auth
+                            <strong>{{ auth()->user()->name }}</strong>
+                        @endauth
                     </p>
                     <flux:button type="submit" size="sm" variant="danger" form="stop-impersonating"
                         class="!w-full !flex !flex-row">
@@ -137,15 +139,19 @@
                                 <span class="relative flex h-8 w-8 shrink-0 overflow-hidden rounded-lg">
                                     <span
                                         class="flex h-full w-full items-center justify-center rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
-                                        {{ auth()->user()->initials() }}
+                                        @auth
+                                            {{ auth()->user()->initials() }}
+                                        @endauth
                                     </span>
                                 </span>
                                 <div class="grid flex-1 text-left text-sm leading-tight">
-                                    <span class="truncate font-semibold">{{ auth()->user()->name }}</span>
-                                    <span class="truncate text-xs">{{ auth()->user()->email }}</span>
-                                    @if(auth()->user()->roles->count())
-                                        <span class="badge badge-primary badge-sm mt-1">{{ auth()->user()->roles->first()->name }}</span>
-                                    @endif
+                                    @auth
+                                        <span class="truncate font-semibold">{{ auth()->user()->name }}</span>
+                                        <span class="truncate text-xs">{{ auth()->user()->email }}</span>
+                                        @if(auth()->user()->roles->count())
+                                            <span class="badge badge-primary badge-sm mt-1">{{ auth()->user()->roles->first()->name }}</span>
+                                        @endif
+                                    @endauth
                                 </div>
                             </div>
                         </div>
@@ -188,16 +194,20 @@
                                 <span class="relative flex h-8 w-8 shrink-0 overflow-hidden rounded-lg">
                                     <span
                                         class="flex h-full w-full items-center justify-center rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
-                                        {{ auth()->user()->initials() }}
+                                        @auth
+                                            {{ auth()->user()->initials() }}
+                                        @endauth
                                     </span>
                                 </span>
 
                                 <div class="grid flex-1 text-left text-sm leading-tight">
-                                    <span class="truncate font-semibold">{{ auth()->user()->name }}</span>
-                                    <span class="truncate text-xs">{{ auth()->user()->email }}</span>
-                                    @if(auth()->user()->roles->count())
-                                        <span class="badge badge-primary badge-sm mt-1">{{ auth()->user()->roles->first()->name }}</span>
-                                    @endif
+                                    @auth
+                                        <span class="truncate font-semibold">{{ auth()->user()->name }}</span>
+                                        <span class="truncate text-xs">{{ auth()->user()->email }}</span>
+                                        @if(auth()->user()->roles->count())
+                                            <span class="badge badge-primary badge-sm mt-1">{{ auth()->user()->roles->first()->name }}</span>
+                                        @endif
+                                    @endauth
                                 </div>
                             </div>
                         </div>

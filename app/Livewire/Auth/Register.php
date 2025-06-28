@@ -13,6 +13,7 @@ use Livewire\Attributes\Rule;
 use Livewire\Component;
 use Livewire\Attributes\Title;
 
+#[Layout('components.layouts.auth')]
 #[Title('Register')]
 class Register extends Component
 {
