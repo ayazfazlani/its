@@ -83,7 +83,7 @@
                     @foreach ($permissions as $permission)
                         <label class="flex items-center gap-2">
                             <input type="checkbox" wire:model.defer="selectedPermissions"
-                                value="{{ $permission->name }}" class="checkbox checkbox-sm" />
+                                value="{{ $permission->id }}" class="checkbox checkbox-sm" />
                             <span>{{ $permission->name }}</span>
                         </label>
                     @endforeach

@@ -106,7 +106,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
                     @foreach ($roles as $role)
                         <label class="flex items-center gap-2">
-                            <input type="checkbox" wire:model.defer="selectedRoles" value="{{ $role->id }}" class="checkbox checkbox-sm" />
+                            <input type="checkbox" wire:model.defer="selectedRoles" value="{{ $role->name }}" class="checkbox checkbox-sm" />
                             <span>{{ $role->name }}</span>
                         </label>
                     @endforeach

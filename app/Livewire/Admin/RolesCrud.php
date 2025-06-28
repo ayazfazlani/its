@@ -55,7 +55,7 @@ class RolesCrud extends Component
     $role = Role::with('permissions')->findOrFail($id);
     $this->roleId = $role->id;
     $this->name = $role->name;
-    $this->selectedPermissions = $role->permissions->pluck('name')->toArray();
+    $this->selectedPermissions = $role->permissions->pluck('id')->toArray();
     $this->isEdit = true;
     $this->showModal = true;
   }
