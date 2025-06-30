@@ -71,6 +71,7 @@ class WebDevelopers extends Component
 
     public function popUp()
     {
+        $this->mount();
         $this->resetValidation();
         $this->reset(['editingId', 'employeeId', 'projectName', 'websiteUrl', 'category', 'status', 'description', 'toolsUsed', 'startDate', 'endDate', 'performance', 'reason']);
         $user = Auth::user();
@@ -85,6 +86,7 @@ class WebDevelopers extends Component
 
     public function popUpHide()
     {
+        $this->mount();
         $this->showModal = false;
         $user = Auth::user();
         $isAdminOrManager = $user && ($user->hasRole('Admin') || $user->hasRole('Manager'));
@@ -97,6 +99,7 @@ class WebDevelopers extends Component
 
     public function save()
     {
+        $this->mount();
         $this->validate();
 
         $data = [
@@ -128,6 +131,7 @@ class WebDevelopers extends Component
 
     public function edit($id)
     {
+        $this->mount();
         $website = Webdesign::findOrFail($id);
         $this->editingId = $id;
         $this->employeeId = $website->employee_id;
@@ -147,6 +151,7 @@ class WebDevelopers extends Component
 
     public function delete($id)
     {
+        $this->mount();
         Webdesign::find($id)->delete();
         session()->flash('message', 'Website deleted successfully.');
         $this->mount();

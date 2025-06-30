@@ -59,7 +59,7 @@ class CancelledSites extends Component
         // Or fallback to user IDs or another check
         // $isAdminOrManager = $user && in_array($user->id, [1,2]);
 
-        if ($isAdminOrManager) {
+        if (Auth::user()->hasRole('Admin') || Auth::user()->hasRole('Manager')) {
             $this->employees = Employee::with('user')->get();
             $this->websites = Webdesign::with(['employee.user'])
                 ->where('status', 'in review')
@@ -76,6 +76,7 @@ class CancelledSites extends Component
 
     public function popUp()
     {
+        $this->mount();
         $this->resetValidation();
         $this->reset(['editingId', 'employeeId', 'projectName', 'websiteUrl', 'category', 'status', 'description', 'toolsUsed', 'startDate', 'endDate', 'performance', 'reason']);
         $user = Auth::user();
@@ -90,6 +91,7 @@ class CancelledSites extends Component
 
     public function popUpHide()
     {
+        $this->mount();
         $this->showModal = false;
         $user = Auth::user();
         $isAdminOrManager = $user && ($user->hasRole('Admin') || $user->hasRole('Manager'));
@@ -102,6 +104,7 @@ class CancelledSites extends Component
 
     public function save()
     {
+        $this->mount();
         $this->validate();
 
         $data = [
@@ -133,6 +136,7 @@ class CancelledSites extends Component
 
     public function edit($id)
     {
+        $this->mount();
         $website = Webdesign::findOrFail($id);
         $this->editingId = $id;
         $this->employeeId = $website->employee_id;
@@ -152,6 +156,7 @@ class CancelledSites extends Component
 
     public function delete($id)
     {
+        $this->mount();
         Webdesign::find($id)->delete();
         session()->flash('message', 'Website deleted successfully.');
         $this->mount();
@@ -162,3 +167,6 @@ class CancelledSites extends Component
         return view('livewire.pages.web.cancelled-sites');
     }
 }
+
+
+

@@ -979,7 +979,7 @@ namespace App\Models {
      * @property mixed $payment_status
      * @property \Illuminate\Support\Carbon|null $updated_at
      * @property \Illuminate\Support\Carbon|null $created_at
-     * @property string $end_date
+     * @property string|null $end_date
      * @property string $start_date
      * @property string|null $reason
      * @property float $performance

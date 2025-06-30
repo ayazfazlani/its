@@ -73,6 +73,7 @@ class DelayedSites extends Component
 
     public function popUp()
     {
+        $this->mount();
         $this->resetValidation();
         $this->reset(['editingId', 'employeeId', 'projectName', 'websiteUrl', 'category', 'status', 'description', 'toolsUsed', 'startDate', 'endDate', 'performance', 'reason']);
         $user = Auth::user();
@@ -87,6 +88,7 @@ class DelayedSites extends Component
 
     public function popUpHide()
     {
+        $this->mount();
         $this->showModal = false;
         $user = Auth::user();
         $isAdminOrManager = method_exists($user, 'hasRole') ? ($user->hasRole('Admin') || $user->hasRole('Manager')) : ($user->role === 'Admin' || $user->role === 'Manager' || $user->id === 1);
@@ -99,6 +101,7 @@ class DelayedSites extends Component
 
     public function save()
     {
+        $this->mount();
         $this->validate();
 
         $data = [
@@ -130,6 +133,7 @@ class DelayedSites extends Component
 
     public function edit($id)
     {
+        $this->mount();
         $website = Webdesign::findOrFail($id);
         $this->editingId = $id;
         $this->employeeId = $website->employee_id;
@@ -149,6 +153,7 @@ class DelayedSites extends Component
 
     public function delete($id)
     {
+        $this->mount();
         Webdesign::find($id)->delete();
         session()->flash('message', 'Website deleted successfully.');
         $this->mount();

@@ -20,7 +20,7 @@
         <!-- Modal -->
         <dialog id="website-modal" class="modal" @if ($showModal) open @endif>
             <form method="dialog" class="modal-box w-full max-w-2xl"
-                wire:submit.prevent="{{ $editingId ? 'update' : 'save' }}">
+                wire:submit.prevent="{{ 'save' }}">
                 <h3 class="font-bold text-lg mb-4">{{ $editingId ? 'Update' : 'Add' }} Website</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="mb-4">

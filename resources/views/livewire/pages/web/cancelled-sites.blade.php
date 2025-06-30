@@ -1,7 +1,7 @@
 <section class="w-full p-6">
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
         <div>
-            <h1 class="text-2xl font-bold">Cancelled Websites</h1>
+            <h1 class="text-2xl font-bold">In Review</h1>
             <p class="text-gray-500">Create, edit, and manage cancelled websites.</p>
         </div>
         <div class="flex gap-2">
@@ -19,7 +19,7 @@
     <!-- Modal -->
     <dialog id="website-modal" class="modal" @if ($showModal) open @endif>
         <form method="dialog" class="modal-box w-full max-w-2xl"
-            wire:submit.prevent="{{ $editingId ? 'update' : 'save' }}">
+            wire:submit.prevent="{{ 'save' }}">
             <h3 class="font-bold text-lg mb-4">{{ $editingId ? 'Update' : 'Add' }} Website</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="mb-4">
