@@ -74,6 +74,11 @@
                 <input type="number" wire:model.defer="budgetSpent" class="input input-bordered w-full" min="0" step="0.01" />
                 @error('budgetSpent') <span class="text-error text-xs">{{ $message }}</span> @enderror
             </div>
+            <div>
+                <label class="label">Stats Date</label>
+                <input type="date" wire:model.defer="statsDate" class="input input-bordered w-full" />
+                @error('statsDate') <span class="text-error text-xs">{{ $message }}</span> @enderror
+            </div>
             <div class="md:col-span-2">
                 <label class="label">Note</label>
                 <textarea wire:model.defer="note" class="textarea textarea-bordered w-full"></textarea>
@@ -96,6 +101,7 @@
                     <th>Calls</th>
                     <th>Budget Spent</th>
                     <th>Performance (%)</th>
+                    <th>Stats Date</th>
                     <th>Note</th>
                     <th>Actions</th>
                 </tr>
@@ -108,6 +114,7 @@
                         <td>{{ $detail->calls }}</td>
                         <td>{{ $detail->budget_spent }}</td>
                         <td>{{ $detail->performance }}</td>
+                        <td>{{ $detail->stats_date ? \Carbon\Carbon::parse($detail->stats_date)->format('d M, Y') : '-' }}</td>
                         <td>{{ $detail->note }}</td>
                         <td>
                             <button class="btn btn-xs btn-outline" wire:click="edit({{ $detail->id }})">Edit</button>

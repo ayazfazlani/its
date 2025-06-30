@@ -52,7 +52,7 @@
                     </div>
                     <div>
                         <label class="label">Status</label>
-                        <select wire:model.defer="status" class="select select-bordered w-full">
+                        <select wire:model="status" class="select select-bordered w-full">
                             <option value="">Select Status</option>
                             <option value="active">Active</option>
                             <option value="pause">Pause</option>
@@ -101,8 +101,8 @@
                     @endhasanyrole
                     @if ($status === 'pause' || $status === 'clientLeft')
                         <div class="md:col-span-2">
-                            <label class="label">Reason</label>
-                            <textarea wire:model.defer="reason" class="textarea textarea-bordered w-full"
+                            <label class="label">Reason <span class="text-error">*</span></label>
+                            <textarea wire:model="reason" class="textarea textarea-bordered w-full"
                                 placeholder="Enter reason for inactive status" rows="3"></textarea>
                             @error('reason')
                                 <span class="text-error text-xs">{{ $message }}</span>
@@ -126,7 +126,7 @@
                         <th>Web URL</th>
                         <th>Performance</th>
                         <th>Start Date</th>
-                        <th>End Date</th>
+                        {{-- <th>End Date</th> --}}
                         <th>Reason</th>
                         <th>Status</th>
                         <th class="text-right">Actions</th>
@@ -139,7 +139,7 @@
                                 {{ $ad->name }}
                             </td>
                             <td @click="window.location='{{ route('ad.details', $ad->id) }}'" style="cursor:pointer;">
-                                {{ $ad->employee->user->name }}
+                                {{ optional($ad->employee?->user)->name ?? '-' }}
                             </td>
                             <td @click="window.location='{{ route('ad.details', $ad->id) }}'" style="cursor:pointer;">
                                 <a target="_blank" href="{{ $ad->web_url }}">{{ $ad->web_url }}</a>
@@ -152,7 +152,7 @@
                                 </div>
                             </td>
                             <td>{{ \Carbon\Carbon::parse($ad->start_date)->format('d M, Y') }}</td>
-                            <td>{{ \Carbon\Carbon::parse($ad->end_date)->format('d M, Y') }}</td>
+                            {{-- <td>{{ \Carbon\Carbon::parse($ad->end_date)->format('d M, Y') }}</td> --}}
                             <td>{{ Str::limit($ad->reason, 30) }}</td>
                             <td>
                                 @php

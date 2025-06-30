@@ -13,7 +13,8 @@ class AdDetails extends Model
         'calls',
         'note',
         'budget_spent',
-        'performance'
+        'performance',
+        'stats_date'
     ];
 
     public function marketing(): BelongsTo

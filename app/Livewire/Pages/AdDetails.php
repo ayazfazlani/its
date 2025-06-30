@@ -23,6 +23,7 @@ class AdDetails extends Component
     public $performance;
     public $editingId;
     public $showModal = false;
+    public $statsDate;
 
     public function mount($marketingId = null)
     {
@@ -40,6 +41,7 @@ class AdDetails extends Component
             'calls' => 'required|integer|min:0',
             'note' => 'nullable|string|max:255',
             'budgetSpent' => 'required|numeric|min:0',
+            'statsDate' => 'required|date',
         ]);
 
         if ($this->editingId) {
@@ -50,6 +52,7 @@ class AdDetails extends Component
                 'calls' => $this->calls,
                 'note' => $this->note,
                 'budget_spent' => $this->budgetSpent,
+                'stats_date' => $this->statsDate,
             ]);
         } else {
              ModelsAdDetails::create([
@@ -58,6 +61,7 @@ class AdDetails extends Component
                 'calls' => $this->calls,
                 'note' => $this->note,
                 'budget_spent' => $this->budgetSpent,
+                'stats_date' => $this->statsDate,
             ]);
         }
 
@@ -78,6 +82,7 @@ class AdDetails extends Component
         $this->calls = $adDetail->calls;
         $this->note = $adDetail->note;
         $this->budgetSpent = $adDetail->budget_spent;
+        $this->statsDate = $adDetail->stats_date;
         $this->showModal = true;
     }
 
@@ -92,7 +97,7 @@ class AdDetails extends Component
 
     public function resetForm()
     {
-        $this->reset(['editingId', 'clicks', 'calls', 'note', 'budgetSpent']);
+        $this->reset(['editingId', 'clicks', 'calls', 'note', 'budgetSpent', 'statsDate']);
     }
 
     public function popUp()

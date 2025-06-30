@@ -5,175 +5,123 @@ namespace App\Livewire\Pages;
 use Livewire\Component;
 use App\Models\Employee;
 use App\Models\Marketing;
-
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Title;
 
 class AdInformation extends Component
 {
     public $advertisements;
+    public $employees;
+    public $showModal = false;
+    public $editingId;
     public $name;
     public $employeeId;
     public $webUrl;
     public $startDate;
     public $endDate;
     public $performance = 0;
-    public $reason;
+    public $reason ;
     public $status;
-    public $marketingId;
-    public $editingId;
-    public $employees;
-    public $showModal = false;
 
     public function mount()
     {
-        $employee = Employee::get();
+        $this->reloadData();
+    }
+
+    protected function reloadData()
+    {
         $user = Auth::user();
-
-        if ($user->hasRole(['Admin', 'Manager'])) {
-
-            $this->advertisements = Marketing::with(['employee'])->where('status', 'active')->get();
+        $isAdminOrManager = $user->hasRole(['Admin', 'Manager']);
+        if ($isAdminOrManager) {
+            $this->advertisements = Marketing::with('employee.user')->where('status', 'active')->get();
             $this->employees = Employee::with('user')->get();
-            // dd($this->employees);
         } else {
-            $this->advertisements = Marketing::with(['employee'])->where('status', 'active')
-                ->where('employee_id', $employee?->id)->get();
-            $this->employees = Employee::with('user')->where('user_id', Auth::id())->get();
-            // dd($this->employees);
+            $employee = Employee::where('user_id', $user->id)->first();
+            $this->advertisements = Marketing::with('employee.user')
+                ->where('status', 'active')
+                ->where('employee_id', $employee?->id)
+                ->get();
+            $this->employees = Employee::with('user')->where('user_id', $user->id)->get();
         }
+        // Filter out ads with missing relationships
+        $this->advertisements = $this->advertisements->filter(function ($ad) {
+            return $ad->employee && $ad->employee->user;
+        });
     }
 
     public function save()
     {
+        $this->reloadData();
         $this->validate([
             'name' => 'required|string|max:255',
             'employeeId' => 'required|exists:employees,id',
             'webUrl' => 'required|string',
             'startDate' => 'required|date',
-            'endDate' => 'required|date|after:startDate',
+            'endDate' => 'nullable|date|after_or_equal:startDate',
             'performance' => 'nullable',
             'status' => 'required|in:active,pause,inActive,clientLeft',
             'reason' => 'nullable|string|required_if:status,pause|required_if:status,clientLeft',
         ]);
 
+        $data = [
+            'name' => $this->name,
+            'employee_id' => $this->employeeId,
+            'web_url' => $this->webUrl,
+            'start_date' => $this->startDate,
+            'end_date' => $this->endDate,
+            'performance' => $this->performance,
+            'reason' => $this->reason,
+            'status' => $this->status,
+        ];
+
         if ($this->editingId) {
-
-
-            $ad = Marketing::with(['employee.user'])->findOrFail($this->editingId);
-
-            $ad->update([
-                'name' => $this->name,
-                'employee_id' => $this->employeeId,
-                'web_url' => $this->webUrl,
-                'start_date' => $this->startDate,
-                'end_date' => $this->endDate,
-                'performance' => $this->performance,
-                'reason' => $this->reason,
-                'status' => $this->status
-            ]);
+            Marketing::findOrFail($this->editingId)->update($data);
             $message = 'Advertisement updated successfully!';
         } else {
-            Marketing::create([
-                'name' => $this->name,
-                'employee_id' => $this->employeeId,
-                'web_url' => $this->webUrl,
-                'start_date' => $this->startDate,
-                'end_date' => $this->endDate,
-                'performance' => $this->performance,
-                'reason' => $this->reason,
-                'status' => $this->status
-            ]);
+            Marketing::create($data);
             $message = 'Advertisement created successfully!';
         }
 
         $this->resetForm();
         $this->showModal = false;
+        $this->reloadData();
         $this->dispatch('showAlert', 'success', $message);
-        // Reload advertisements with eager loading
-        // $user = Auth::user();
-        // $isAdminOrManagerOrSupport = method_exists($user, 'hasRole')
-        //     ? ($user->hasRole('Admin') || $user->hasRole('Manager') || $user->hasRole('Customer Support'))
-        //     : ($user->role === 'Admin' || $user->role === 'Manager' || $user->role === 'Customer Support' || $user->id === 1);
-        // if ($isAdminOrManagerOrSupport) {
-        //     $this->advertisements = Marketing::with(['employee.user'])->where('status', 'active')->get();
-        //     $this->employees = Employee::with('user')->get();
-        // } else {
-        //     $employee = Employee::with('user')->where('user_id', Auth::id())->first();
-        //     $this->advertisements = Marketing::with(['employee.user'])->where('status', 'active')
-        //         ->where('employee_id', $employee?->id)->get();
-        //     $this->employees = Employee::with('user')->where('user_id', Auth::id())->get();
-        // }
     }
 
     public function edit($id)
     {
-        $ad = Marketing::with(['employee.user'])->findOrFail($id);
-        // $this->employees = Employee::with('user')->get();
-        $this->editingId = $id;
-        $this->marketingId = $ad->id;
+        $ad = Marketing::with('employee.user')->findOrFail($id);
+        $this->editingId = $ad->id;
         $this->name = $ad->name;
-        $this->employeeId = $ad->employee->user->id;
+        $this->employeeId = $ad->employee_id;
         $this->webUrl = $ad->web_url;
         $this->startDate = $ad->start_date;
         $this->endDate = $ad->end_date;
         $this->performance = $ad->performance;
         $this->reason = $ad->reason;
         $this->status = $ad->status;
+        $this->reloadData();
         $this->showModal = true;
-        // dd();
     }
 
     public function delete($id)
     {
-        $ad = Marketing::with(['employee.user'])->findOrFail($id);
-        $ad->delete();
-
+        Marketing::findOrFail($id)->delete();
+        $this->reloadData();
         $this->dispatch('showAlert', 'success', 'Advertisement deleted successfully!');
-
-        // Reload advertisements with eager loading
-        $user = Auth::user();
-        $isAdminOrManagerOrSupport = method_exists($user, 'hasRole')
-            ? ($user->hasRole('Admin') || $user->hasRole('Manager') || $user->hasRole('Customer Support'))
-            : ($user->role === 'Admin' || $user->role === 'Manager' || $user->role === 'Customer Support' || $user->id === 1);
-        if ($isAdminOrManagerOrSupport) {
-            $this->advertisements = Marketing::with(['employee.user'])->where('status', 'active')->get();
-            $this->employees = Employee::with('user')->get();
-        } else {
-            $employee = Employee::with('user')->where('user_id', Auth::id())->first();
-            $this->advertisements = Marketing::with(['employee.user'])->where('status', 'active')
-                ->where('employee_id', $employee?->id)->get();
-            $this->employees = Employee::with('user')->where('user_id', Auth::id())->get();
-        }
     }
 
     protected function resetForm()
     {
         $this->reset([
-            'name',
-            'employeeId',
-            'webUrl',
-            'startDate',
-            'endDate',
-            'performance',
-            'reason',
-            'status',
-            'marketingId',
-            'editingId'
+            'name', 'employeeId', 'webUrl', 'startDate', 'endDate', 'performance', 'reason', 'status', 'editingId'
         ]);
     }
 
     public function popUp()
     {
         $this->resetForm();
-
-        // // Ensure employees are properly loaded with user relationship
-        // $user = Auth::user();
-        // if ($user->hasRole(['Admin', 'Manager'])) {
-        //     $this->employees = Employee::with('user')->get();
-        // } else {
-        //     $this->employees = Employee::with('user')->where('user_id', Auth::id())->get();
-        // }
-
+        $this->reloadData();
         $this->showModal = true;
     }
 
@@ -181,21 +129,32 @@ class AdInformation extends Component
     {
         $this->showModal = false;
         $this->resetForm();
-
-        // Reload employees to ensure they're properly loaded
-        // $user = Auth::user();
-        // if ($user->hasRole(['Admin', 'Manager'])) {
-        //     $this->employees = Employee::with('user')->get();
-        // } else {
-        //     $this->employees = Employee::with('user')->where('user_id', Auth::id())->get();
-        // }
+        $this->reloadData();
     }
+
     #[Title('Ads Compaigns')]
     public function render()
     {
+        $user = Auth::user();
+        $isAdminOrManager = $user->hasRole(['Admin', 'Manager']);
+        if ($isAdminOrManager) {
+            $advertisements = Marketing::with('employee.user')->where('status', 'active')->get();
+            $employees = Employee::get();
+        } else {
+            $employee = Employee::where('user_id', $user->id)->first();
+            $advertisements = Marketing::with('employee.user')
+                ->where('status', 'active')
+                ->where('employee_id', $employee?->id)
+                ->get();
+            $employees = Employee::with('user')->where('user_id', $user->id)->get();
+        }
+        // Filter out ads with missing relationships
+        $advertisements = $advertisements->filter(function ($ad) {
+            return $ad->employee && $ad->employee->user;
+        });
         return view('livewire.pages.ad-information', [
-            // 'advertisements' => $this->advertisements,
-            // 'employees' => $this->employees
+            'advertisements' => $advertisements,
+            'employees' => $employees,
         ]);
     }
 }

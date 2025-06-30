@@ -29,77 +29,73 @@ class PaymentHalfCleared extends Component
 
     public function mount()
     {
-        $employee = Employee::where('user_id', Auth::id())->first();
+        $this->reloadData();
+    }
+
+    protected function reloadData()
+    {
         $user = Auth::user();
-        $isAdmin = method_exists($user, 'hasRole') ? $user->hasRole('Admin') : ($user->role ?? null) === 'Admin' || $user->id === 1;
-        $isCstmrSupport = method_exists($user, 'hasRole') ? $user->hasRole('Customer Support') : ($user->role ?? null) === 'Customer Support';
-        if ($isAdmin || $isCstmrSupport) {
-            $this->advertisements = Marketing::with('employee.user')->where('payment_status', 'halfclear')->get();
+        $isAdminOrManagerOrSupport = method_exists($user, 'hasRole')
+            ? ($user->hasRole('Admin') || $user->hasRole('Manager') || $user->hasRole('Customer Support'))
+            : ($user->role === 'Admin' || $user->role === 'Manager' || $user->role === 'Customer Support' || $user->id === 1);
+        if ($isAdminOrManagerOrSupport) {
+            $this->advertisements = Marketing::with(['employee.user'])->where('payment_status', 'halfclear')->get();
             $this->employees = Employee::with('user')->get();
         } else {
-            $this->advertisements = Marketing::with('employee.user')->where('payment_status', 'halfclear')
-                ->where('employee_id', $employee->id)->get();
+            $employee = Employee::with('user')->where('user_id', Auth::id())->first();
+            $this->advertisements = Marketing::with(['employee.user'])->where('payment_status', 'halfclear')
+                ->where('employee_id', $employee?->id)->get();
             $this->employees = Employee::with('user')->where('user_id', Auth::id())->get();
         }
     }
 
     public function save()
     {
+        $this->reloadData();
         $this->validate([
             'name' => 'required|string|max:255',
             'employeeId' => 'required|exists:employees,id',
             'webUrl' => 'required|string',
             'startDate' => 'required|date',
-            'endDate' => 'required|date|after:startDate',
+            'endDate' => 'nullable|date|after_or_equal:startDate',
             'performance' => 'nullable',
-            'status' => 'required|in:active,pause,inActive,clientLeft',
+            'status' => 'required|in:active,pause,inActive,clientLeft,halfclear',
             'reason' => 'nullable|string|required_if:status,pause|required_if:status,clientLeft',
             'paymentStatus' => 'nullable|in:cleared,halfclear,uncleared',
-            'paymentClearanceDate' => 'nullable|date',
+            'paymentClearanceDate' => 'nullable|date'
         ]);
 
+        $data = [
+            'name' => $this->name,
+            'employee_id' => $this->employeeId,
+            'web_url' => $this->webUrl,
+            'start_date' => $this->startDate,
+            'end_date' => $this->endDate,
+            'performance' => $this->performance,
+            'reason' => $this->reason,
+            'status' => $this->status,
+            'payment_status' => $this->paymentStatus,
+            'payment_clearance_date' => $this->paymentClearanceDate
+        ];
+
         if ($this->editingId) {
-            $ad = Marketing::findOrFail($this->editingId);
-            $ad->update([
-                'name' => $this->name,
-                'employee_id' => $this->employeeId,
-                'web_url' => $this->webUrl,
-                'start_date' => $this->startDate,
-                'end_date' => $this->endDate,
-                'performance' => $this->performance,
-                'reason' => $this->reason,
-                'status' => $this->status,
-                'payment_status' => $this->paymentStatus,
-                'paymentClearanceDate' => $this->paymentClearanceDate,
-            ]);
+            Marketing::findOrFail($this->editingId)->update($data);
             $message = 'Advertisement updated successfully!';
         } else {
-            Marketing::create([
-                'name' => $this->name,
-                'employee_id' => $this->employeeId,
-                'web_url' => $this->webUrl,
-                'start_date' => $this->startDate,
-                'end_date' => $this->endDate,
-                'performance' => $this->performance,
-                'reason' => $this->reason,
-                'status' => $this->status,
-                'payment_status' => $this->paymentStatus,
-                'paymentClearanceDate' => $this->paymentClearanceDate,
-            ]);
+            Marketing::create($data);
             $message = 'Advertisement created successfully!';
         }
 
         $this->resetForm();
         $this->showModal = false;
+        $this->reloadData();
         $this->dispatch('showAlert', 'success', $message);
-
-        $this->mount();
     }
 
     public function edit($id)
     {
-        $ad = Marketing::findOrFail($id);
-        $this->editingId = $id;
+        $ad = Marketing::with(['employee.user'])->findOrFail($id);
+        $this->editingId = $ad->id;
         $this->marketingId = $ad->id;
         $this->name = $ad->name;
         $this->employeeId = $ad->employee_id;
@@ -110,17 +106,16 @@ class PaymentHalfCleared extends Component
         $this->reason = $ad->reason;
         $this->status = $ad->status;
         $this->paymentStatus = $ad->payment_status;
-        $this->paymentClearanceDate = $ad->paymentClearanceDate;
+        $this->paymentClearanceDate = $ad->payment_clearance_date;
+        $this->reloadData();
         $this->showModal = true;
     }
 
     public function delete($id)
     {
-        $ad = Marketing::findOrFail($id);
-        $ad->delete();
+        Marketing::findOrFail($id)->delete();
+        $this->reloadData();
         $this->dispatch('showAlert', 'success', 'Advertisement deleted successfully!');
-
-        $this->mount();
     }
 
     protected function resetForm()
@@ -144,6 +139,7 @@ class PaymentHalfCleared extends Component
     public function popUp()
     {
         $this->resetForm();
+        $this->reloadData();
         $this->showModal = true;
     }
 
@@ -151,11 +147,15 @@ class PaymentHalfCleared extends Component
     {
         $this->showModal = false;
         $this->resetForm();
+        $this->reloadData();
     }
 
     #[Title('Payment Half Clear')]
     public function render()
     {
-        return view('livewire.pages.cstmr-sprt.payment-half-cleared');
+        return view('livewire.pages.cstmr-sprt.payment-half-cleared', [
+            'advertisements' => $this->advertisements,
+            'employees' => $this->employees,
+        ]);
     }
 }

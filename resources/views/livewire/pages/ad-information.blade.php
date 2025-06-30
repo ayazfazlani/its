@@ -2,8 +2,8 @@
     <section class="w-full p-6">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
             <div>
-                <h1 class="text-2xl font-bold">Active Advertisements</h1>
-                <p class="text-gray-500">Manage and track active advertisements.</p>
+                <h1 class="text-2xl font-bold">Overdue Advertisements</h1>
+                <p class="text-gray-500">Manage and track overdue advertisements.</p>
             </div>
             <div class="flex gap-2">
                 @can('Create Ads')
@@ -52,7 +52,7 @@
                     </div>
                     <div>
                         <label class="label">Status</label>
-                        <select wire:model.defer="status" class="select select-bordered w-full">
+                        <select wire:model="status" class="select select-bordered w-full">
                             <option value="">Select Status</option>
                             <option value="active">Active</option>
                             <option value="pause">Pause</option>
@@ -77,10 +77,32 @@
                             <span class="text-error text-xs">{{ $message }}</span>
                         @enderror
                     </div>
+                    @hasanyrole('Customer Support|Admin')
+                        <div>
+                            <label class="label">Payment Status</label>
+                            <select wire:model.defer="paymentStatus" class="select select-bordered w-full">
+                                <option value="">Select payment Status</option>
+                                <option value="cleared">Cleared</option>
+                                <option value="halfclear">Halfclear</option>
+                                <option value="uncleared">Uncleared</option>
+                            </select>
+                            @error('paymentStatus')
+                                <span class="text-error text-xs">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div>
+                            <label class="label">Payment Clearance Date</label>
+                            <input type="date" wire:model.defer="paymentClearanceDate"
+                                class="input input-bordered w-full" />
+                            @error('paymentClearanceDate')
+                                <span class="text-error text-xs">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    @endhasanyrole
                     @if ($status === 'pause' || $status === 'clientLeft')
                         <div class="md:col-span-2">
-                            <label class="label">Reason</label>
-                            <textarea wire:model.defer="reason" class="textarea textarea-bordered w-full"
+                            <label class="label">Reason <span class="text-error">*</span></label>
+                            <textarea wire:model="reason" class="textarea textarea-bordered w-full"
                                 placeholder="Enter reason for inactive status" rows="3"></textarea>
                             @error('reason')
                                 <span class="text-error text-xs">{{ $message }}</span>
@@ -104,7 +126,7 @@
                         <th>Web URL</th>
                         <th>Performance</th>
                         <th>Start Date</th>
-                        <th>End Date</th>
+                        {{-- <th>End Date</th> --}}
                         <th>Reason</th>
                         <th>Status</th>
                         <th class="text-right">Actions</th>
@@ -117,7 +139,7 @@
                                 {{ $ad->name }}
                             </td>
                             <td @click="window.location='{{ route('ad.details', $ad->id) }}'" style="cursor:pointer;">
-                                {{-- {{ optional(optional($ad->employee)->user)->name ?? '-' }} --}}
+                                {{ optional($ad->employee?->user)->name ?? '-' }}
                             </td>
                             <td @click="window.location='{{ route('ad.details', $ad->id) }}'" style="cursor:pointer;">
                                 <a target="_blank" href="{{ $ad->web_url }}">{{ $ad->web_url }}</a>
@@ -130,7 +152,7 @@
                                 </div>
                             </td>
                             <td>{{ \Carbon\Carbon::parse($ad->start_date)->format('d M, Y') }}</td>
-                            <td>{{ \Carbon\Carbon::parse($ad->end_date)->format('d M, Y') }}</td>
+                            {{-- <td>{{ \Carbon\Carbon::parse($ad->end_date)->format('d M, Y') }}</td> --}}
                             <td>{{ Str::limit($ad->reason, 30) }}</td>
                             <td>
                                 @php

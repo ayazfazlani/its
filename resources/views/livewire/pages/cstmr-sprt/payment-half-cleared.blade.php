@@ -34,7 +34,7 @@
                         <select wire:model.defer="employeeId" class="select select-bordered w-full">
                             <option value="">Select Employee</option>
                             @foreach ($employees as $employee)
-                                <option value="{{ $employee->id }}">{{ $employee->user->name }}</option>
+                                <option value="{{ $employee->id }}">{{ optional($employee->user)->name ?? 'Unknown' }}</option>
                             @endforeach
                         </select>
                         @error('employeeId')
@@ -123,7 +123,7 @@
                         <th>Web URL</th>
                         <th>Performance</th>
                         <th>Start Date</th>
-                        <th>End Date</th>
+                        {{-- <th>End Date</th> --}}
                         <th>Reason</th>
                         <th>Status</th>
                         <th>Payment Status</th>
@@ -138,7 +138,7 @@
                                 {{ $ad->name }}
                             </td>
                             <td @click="window.location='{{ route('ad.details', $ad->id) }}'" style="cursor:pointer;">
-                                {{ $ad->employee->user->name }}
+                                {{ optional($ad->employee?->user)->name ?? '-' }}
                             </td>
                             <td @click="window.location='{{ route('ad.details', $ad->id) }}'" style="cursor:pointer;">
                                 <a target="_blank" href="{{ $ad->web_url }}">{{ $ad->web_url }}</a>
@@ -151,7 +151,7 @@
                                 </div>
                             </td>
                             <td>{{ \Carbon\Carbon::parse($ad->start_date)->format('d M, Y') }}</td>
-                            <td>{{ \Carbon\Carbon::parse($ad->end_date)->format('d M, Y') }}</td>
+                            {{-- <td>{{ \Carbon\Carbon::parse($ad->end_date)->format('d M, Y') }}</td> --}}
                             <td>{{ Str::limit($ad->reason, 30) }}</td>
                             <td>
                                 @php

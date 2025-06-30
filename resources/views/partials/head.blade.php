@@ -14,6 +14,7 @@
 <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 @vite(['resources/css/app.css', 'resources/js/app.js'])
 @fluxAppearance
+@livewireStyles
 
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <x-livewire-alert::scripts />
