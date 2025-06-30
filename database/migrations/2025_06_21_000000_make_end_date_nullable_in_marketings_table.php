@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('marketings', function (Blueprint $table) {
-            $table->date('end_date')->nullable(false)->change();
-        });
+        // Schema::table('marketings', function (Blueprint $table) {
+        //     $table->date('end_date')->nullable(false)->change();
+        // });
     }
 }; 
