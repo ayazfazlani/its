@@ -55,7 +55,7 @@ class RolesCrud extends Component
     $role = Role::with('permissions')->findOrFail($id);
     $this->roleId = $role->id;
     $this->name = $role->name;
-    $this->selectedPermissions = $role->permissions->pluck('id')->toArray();
+    $this->selectedPermissions = $role->permissions->pluck('name')->toArray();
     $this->isEdit = true;
     $this->showModal = true;
   }
@@ -65,10 +65,10 @@ class RolesCrud extends Component
     $this->validate();
 
     // Ensure selectedPermissions contains only valid permission IDs
-    $validPermissionIds = Permission::pluck('id')->toArray();
-    $this->selectedPermissions = array_filter($this->selectedPermissions, function ($permissionId) use ($validPermissionIds) {
-      return in_array((int)$permissionId, $validPermissionIds);
-    });
+    $validPermissionIds = Permission::pluck('name')->toArray();
+    // $this->selectedPermissions = array_filter($this->selectedPermissions, function ($permissionId) use ($validPermissionIds) {
+    //   return in_array((int)$permissionId, $validPermissionIds);
+    // });
 
     if ($this->isEdit && $this->roleId) {
       $role = Role::findOrFail($this->roleId);

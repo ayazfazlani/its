@@ -27,16 +27,16 @@ class AdInformation extends Component
 
     public function mount()
     {
-        $employee = Employee::with('user')->where('user_id', Auth::id())->first();
+        $employee = Employee::get();
         $user = Auth::user();
 
         if ($user->hasRole(['Admin', 'Manager'])) {
 
-            $this->advertisements = Marketing::with(['employee.user'])->where('status', 'active')->get();
+            $this->advertisements = Marketing::with(['employee'])->where('status', 'active')->get();
             $this->employees = Employee::with('user')->get();
             // dd($this->employees);
         } else {
-            $this->advertisements = Marketing::with(['employee.user'])->where('status', 'active')
+            $this->advertisements = Marketing::with(['employee'])->where('status', 'active')
                 ->where('employee_id', $employee?->id)->get();
             $this->employees = Employee::with('user')->where('user_id', Auth::id())->get();
             // dd($this->employees);
@@ -57,7 +57,10 @@ class AdInformation extends Component
         ]);
 
         if ($this->editingId) {
+
+
             $ad = Marketing::with(['employee.user'])->findOrFail($this->editingId);
+
             $ad->update([
                 'name' => $this->name,
                 'employee_id' => $this->employeeId,
@@ -87,28 +90,29 @@ class AdInformation extends Component
         $this->showModal = false;
         $this->dispatch('showAlert', 'success', $message);
         // Reload advertisements with eager loading
-        $user = Auth::user();
-        $isAdminOrManagerOrSupport = method_exists($user, 'hasRole')
-            ? ($user->hasRole('Admin') || $user->hasRole('Manager') || $user->hasRole('Customer Support'))
-            : ($user->role === 'Admin' || $user->role === 'Manager' || $user->role === 'Customer Support' || $user->id === 1);
-        if ($isAdminOrManagerOrSupport) {
-            $this->advertisements = Marketing::with(['employee.user'])->where('status', 'active')->get();
-            $this->employees = Employee::with('user')->get();
-        } else {
-            $employee = Employee::with('user')->where('user_id', Auth::id())->first();
-            $this->advertisements = Marketing::with(['employee.user'])->where('status', 'active')
-                ->where('employee_id', $employee?->id)->get();
-            $this->employees = Employee::with('user')->where('user_id', Auth::id())->get();
-        }
+        // $user = Auth::user();
+        // $isAdminOrManagerOrSupport = method_exists($user, 'hasRole')
+        //     ? ($user->hasRole('Admin') || $user->hasRole('Manager') || $user->hasRole('Customer Support'))
+        //     : ($user->role === 'Admin' || $user->role === 'Manager' || $user->role === 'Customer Support' || $user->id === 1);
+        // if ($isAdminOrManagerOrSupport) {
+        //     $this->advertisements = Marketing::with(['employee.user'])->where('status', 'active')->get();
+        //     $this->employees = Employee::with('user')->get();
+        // } else {
+        //     $employee = Employee::with('user')->where('user_id', Auth::id())->first();
+        //     $this->advertisements = Marketing::with(['employee.user'])->where('status', 'active')
+        //         ->where('employee_id', $employee?->id)->get();
+        //     $this->employees = Employee::with('user')->where('user_id', Auth::id())->get();
+        // }
     }
 
     public function edit($id)
     {
         $ad = Marketing::with(['employee.user'])->findOrFail($id);
+        // $this->employees = Employee::with('user')->get();
         $this->editingId = $id;
         $this->marketingId = $ad->id;
         $this->name = $ad->name;
-        $this->employeeId = $ad->employee_id;
+        $this->employeeId = $ad->employee->user->id;
         $this->webUrl = $ad->web_url;
         $this->startDate = $ad->start_date;
         $this->endDate = $ad->end_date;
@@ -116,6 +120,7 @@ class AdInformation extends Component
         $this->reason = $ad->reason;
         $this->status = $ad->status;
         $this->showModal = true;
+        // dd();
     }
 
     public function delete($id)
@@ -161,13 +166,13 @@ class AdInformation extends Component
     {
         $this->resetForm();
 
-        // Ensure employees are properly loaded with user relationship
-        $user = Auth::user();
-        if ($user->hasRole(['Admin', 'Manager'])) {
-            $this->employees = Employee::with('user')->get();
-        } else {
-            $this->employees = Employee::with('user')->where('user_id', Auth::id())->get();
-        }
+        // // Ensure employees are properly loaded with user relationship
+        // $user = Auth::user();
+        // if ($user->hasRole(['Admin', 'Manager'])) {
+        //     $this->employees = Employee::with('user')->get();
+        // } else {
+        //     $this->employees = Employee::with('user')->where('user_id', Auth::id())->get();
+        // }
 
         $this->showModal = true;
     }
@@ -178,19 +183,19 @@ class AdInformation extends Component
         $this->resetForm();
 
         // Reload employees to ensure they're properly loaded
-        $user = Auth::user();
-        if ($user->hasRole(['Admin', 'Manager'])) {
-            $this->employees = Employee::with('user')->get();
-        } else {
-            $this->employees = Employee::with('user')->where('user_id', Auth::id())->get();
-        }
+        // $user = Auth::user();
+        // if ($user->hasRole(['Admin', 'Manager'])) {
+        //     $this->employees = Employee::with('user')->get();
+        // } else {
+        //     $this->employees = Employee::with('user')->where('user_id', Auth::id())->get();
+        // }
     }
     #[Title('Ads Compaigns')]
     public function render()
     {
         return view('livewire.pages.ad-information', [
-            'advertisements' => $this->advertisements,
-            'employees' => $this->employees
+            // 'advertisements' => $this->advertisements,
+            // 'employees' => $this->employees
         ]);
     }
 }

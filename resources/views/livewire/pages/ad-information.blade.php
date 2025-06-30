@@ -117,7 +117,7 @@
                                 {{ $ad->name }}
                             </td>
                             <td @click="window.location='{{ route('ad.details', $ad->id) }}'" style="cursor:pointer;">
-                                {{ optional(optional($ad->employee)->user)->name ?? '-' }}
+                                {{-- {{ optional(optional($ad->employee)->user)->name ?? '-' }} --}}
                             </td>
                             <td @click="window.location='{{ route('ad.details', $ad->id) }}'" style="cursor:pointer;">
                                 <a target="_blank" href="{{ $ad->web_url }}">{{ $ad->web_url }}</a>

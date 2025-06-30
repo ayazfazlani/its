@@ -15,7 +15,6 @@ class Marketing extends Model
         'start_date',
         'end_date',
         'performance',
-        'reason',
         'payment_status',
         'payment_clearance_date'
     ];
