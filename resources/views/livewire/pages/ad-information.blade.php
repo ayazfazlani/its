@@ -2,8 +2,8 @@
     <section class="w-full p-6">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
             <div>
-                <h1 class="text-2xl font-bold">Overdue Advertisements</h1>
-                <p class="text-gray-500">Manage and track overdue advertisements.</p>
+                <h1 class="text-2xl font-bold">Active Advertisements</h1>
+                <p class="text-gray-500">Manage and track active advertisements.</p>
             </div>
             <div class="flex gap-2">
                 @can('Create Ads')

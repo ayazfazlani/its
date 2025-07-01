@@ -8,6 +8,7 @@ use App\Models\Marketing;
 use Livewire\WithPagination;
 use Livewire\Attributes\Title;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use App\Models\AdDetails as ModelsAdDetails;
 
 class AdDetails extends Component
@@ -24,17 +25,57 @@ class AdDetails extends Component
     public $editingId;
     public $showModal = false;
     public $statsDate;
+    public $ad;
 
-    public function mount($marketingId = null)
+    public function mount($id)
     {
-        $this->marketingId = $marketingId;
+        // Check if user has permission to access this marketing campaign
+        $this->authorizeAccess($id);
+        
+        $this->marketingId = $id;
         $this->adDetails = ModelsAdDetails::with('marketing')
-            ->when($marketingId, fn($q) => $q->where('marketing_id', $marketingId))
+            ->when($id, fn($q) => $q->where('marketing_id', $id))
             ->get();
+        $this->ad = Marketing::where('id', $id)->get();
+    }
+
+    /**
+     * Authorize user access to the marketing campaign
+     */
+    protected function authorizeAccess($marketingId)
+    {
+        $user = Auth::user();
+        
+        // Check if user is admin, manager, or customer support (can access all)
+        $isAdminOrManagerOrSupport = method_exists($user, 'hasRole')
+            ? ($user->hasRole('Admin') || $user->hasRole('Manager') || $user->hasRole('Customer Support'))
+            : ($user->role === 'Admin' || $user->role === 'Manager' || $user->role === 'Customer Support' || $user->id === 1);
+        
+        if ($isAdminOrManagerOrSupport) {
+            return; // Allow access
+        }
+        
+        // For regular users, check if they own the marketing campaign
+        $employee = \App\Models\Employee::where('user_id', $user->id)->first();
+        
+        if (!$employee) {
+            abort(403, 'Access denied. Employee record not found.');
+        }
+        
+        $marketing = Marketing::where('id', $marketingId)
+            ->where('employee_id', $employee->id)
+            ->first();
+            
+        if (!$marketing) {
+            abort(403, 'Access denied. You can only view your own marketing campaigns.');
+        }
     }
 
     public function save()
     {
+        // Re-authorize before saving
+        $this->authorizeAccess($this->marketingId);
+        
         $this->validate([
             'marketingId' => 'required|exists:marketings,id',
             'clicks' => 'required|integer|min:0',
@@ -75,6 +116,9 @@ class AdDetails extends Component
 
     public function edit($id)
     {
+        // Re-authorize before editing
+        $this->authorizeAccess($this->marketingId);
+        
         $adDetail =  ModelsAdDetails::with('marketing')->findOrFail($id);
         $this->editingId = $adDetail->id;
         $this->marketingId = $adDetail->marketing_id;
@@ -88,6 +132,9 @@ class AdDetails extends Component
 
     public function delete($id)
     {
+        // Re-authorize before deleting
+        $this->authorizeAccess($this->marketingId);
+        
          ModelsAdDetails::with('marketing')->findOrFail($id)->delete();
         $this->adDetails = ModelsAdDetails::with('marketing')
             ->when($this->marketingId, fn($q) => $q->where('marketing_id', $this->marketingId))
@@ -116,13 +163,13 @@ class AdDetails extends Component
     public function render()
     {
         // Always eager load marketing in render as well
-        $this->adDetails = ModelsAdDetails::with('marketing')
-            ->when($this->marketingId, fn($q) => $q->where('marketing_id', $this->marketingId))
-            ->get();
+        // $this->adDetails = ModelsAdDetails::with('marketing')
+        //     ->when($this->marketingId, fn($q) => $q->where('marketing_id', $this->marketingId))
+        //     ->get();
 
         return view('livewire.pages.ad-details', [
             'adDetails' => $this->adDetails,
-            'marketings' => Marketing::all(),
+            'marketings' => $this->ad,
         ]);
     }
 }
