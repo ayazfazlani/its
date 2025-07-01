@@ -29,6 +29,7 @@ class AdDetails extends Component
 
     public function mount($id)
     {
+        $this->marketingId = $id;
         // Check if user has permission to access this marketing campaign
         $this->authorizeAccess($id);
         
@@ -116,6 +117,7 @@ class AdDetails extends Component
 
     public function edit($id)
     {
+        $this->mount($this->marketingId);
         // Re-authorize before editing
         $this->authorizeAccess($this->marketingId);
         
@@ -149,12 +151,14 @@ class AdDetails extends Component
 
     public function popUp()
     {
+       $this->mount($this->marketingId);
         $this->resetForm();
         $this->showModal = true;
     }
 
     public function popUpHide()
     {
+        $this->mount($this->marketingId);
         $this->showModal = false;
         $this->resetForm();
     }
