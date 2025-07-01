@@ -75,7 +75,9 @@ class ClientLeft extends Component
             // 'end_date' => $this->endDate,
             'performance' => $this->performance,
             'reason' => $this->reason,
-            'status' => $this->status
+            'status' => $this->status,
+            'payment_status' => $this->paymentStatus,
+            'payment_clearance_date' => $this->paymentClearanceDate
         ];
 
         if ($this->editingId) {
@@ -105,6 +107,8 @@ class ClientLeft extends Component
         $this->performance = $ad->performance;
         $this->reason = $ad->reason;
         $this->status = $ad->status;
+        $this->paymentStatus = $ad->payment_status;
+        $this->paymentClearanceDate = $ad->payment_clearance_date;
         $this->reloadData();
         $this->showModal = true;
     }
@@ -128,7 +132,9 @@ class ClientLeft extends Component
             'reason',
             'status',
             'marketingId',
-            'editingId'
+            'editingId',
+             'paymentStatus',
+            'paymentClearanceDate'
         ]);
     }
 

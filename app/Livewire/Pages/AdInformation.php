@@ -22,6 +22,8 @@ class AdInformation extends Component
     public $performance = 0;
     public $reason ;
     public $status;
+    public $paymentStatus;
+    public $paymentClearanceDate;
 
     public function mount()
     {
@@ -72,6 +74,8 @@ class AdInformation extends Component
             'performance' => $this->performance,
             'reason' => $this->reason,
             'status' => $this->status,
+            'payment_status' => $this->paymentStatus,
+            'payment_clearance_date' => $this->paymentClearanceDate
         ];
 
         if ($this->editingId) {
@@ -100,6 +104,8 @@ class AdInformation extends Component
         $this->performance = $ad->performance;
         $this->reason = $ad->reason;
         $this->status = $ad->status;
+        $this->paymentStatus = $ad->payment_status;
+        $this->paymentClearanceDate = $ad->payment_clearance_date;
         $this->reloadData();
         $this->showModal = true;
     }
