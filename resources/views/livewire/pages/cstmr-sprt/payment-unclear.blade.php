@@ -2,7 +2,7 @@
     <section class="w-full p-6">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
             <div>
-                <h1 class="text-2xl font-bold">Payment Cleared Advertisements</h1>
+                <h1 class="text-2xl font-bold">Payment Uncleared Advertisements</h1>
                 <p class="text-gray-500">Manage and track advertisements with cleared payments.</p>
             </div>
             <div class="flex gap-2">
