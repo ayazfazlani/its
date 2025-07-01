@@ -16,11 +16,14 @@ use App\Livewire\Settings\Profile;
 use App\Livewire\Settings\Password;
 use App\Livewire\Pages\Ads\PauseAds;
 use Illuminate\Support\Facades\Auth;
+use App\Livewire\Admin\Ads\Activeads;
+use App\Livewire\Admin\Ads\Pausedads;
 use App\Livewire\Pages\AdInformation;
 use App\Livewire\Pages\WebDevelopers;
 use App\Livewire\Settings\Appearance;
 use Illuminate\Support\Facades\Route;
 use App\Livewire\Pages\Ads\ClientLeft;
+
 use App\Livewire\Pages\Ads\InActiveAd;
 use App\Livewire\Admin\PermissionsCrud;
 use App\Livewire\Pages\EmployeeProfile;
@@ -30,7 +33,9 @@ use App\Livewire\Pages\EpmloyeeDashboard;
 use App\Livewire\Pages\Notices\NoticeList;
 use App\Livewire\Pages\Web\CancelledSites;
 use App\Livewire\Pages\Web\DeliveredSites;
+use App\Livewire\Admin\Ads\ViewEmployeeAds;
 use App\Livewire\Pages\Notices\NoticeForAll;
+use App\Livewire\Admin\Ads\Overdueemployeeads;
 use App\Livewire\Pages\Employee\EmployeesList;
 use App\Livewire\Pages\Employee\SeoSpecialist;
 use App\Livewire\Pages\Employee\CustomerSupprt;
@@ -40,6 +45,7 @@ use App\Http\Controllers\ImpersonationController;
 use App\Livewire\Pages\Employee\DigitalMarketers;
 use App\Livewire\Pages\Notices\NoticeForSpecific;
 use App\Livewire\Pages\CstmrSprt\PaymentHalfCleared;
+use App\Livewire\Admin\Ads\Clientleft as AdsClientleft;
 
 
 // Route::get('/', \App\Livewire\Home::class)->name('home');
@@ -90,6 +96,11 @@ Route::middleware(['auth'])->group(function (): void {
     Route::get('/employees/seo', SeoSpecialist::class)->name('emp.seo');
     Route::get('/employees/customersupport', CustomerSupprt::class)->name('emp.customersupport');
 
+    Route::get('employees/activeads', Activeads::class)->name('employee.activeads');
+    Route::get('employees/clientleft', AdsClientleft::class)->name('employee.clientleftads');
+    Route::get('employees/pausedads', Pausedads::class)->name('employee.pausedads');
+    Route::get('employees/overdueads', Overdueemployeeads::class)->name('employee.overdueads');
+    Route::get('employees/view/{id}', ViewEmployeeAds::class)->name('employee.view');
     // 🔸 Digital Marketing Routes
     Route::middleware(['check.department.or.role:digital marketing,Admin,Employee,Manager,Customer Support'])->group(function () {
         Route::get('/adds', AdInformation::class)->name('ads');
