@@ -34,9 +34,11 @@ use App\Livewire\Pages\Notices\NoticeList;
 use App\Livewire\Pages\Web\CancelledSites;
 use App\Livewire\Pages\Web\DeliveredSites;
 use App\Livewire\Admin\Ads\ViewEmployeeAds;
+use App\Livewire\Admin\Ads\WebDevEmployees;
 use App\Livewire\Admin\ViewAds\EmpActiveAds;
 use App\Livewire\Pages\Notices\NoticeForAll;
 use App\Livewire\Admin\Ads\Overdueemployeeads;
+use App\Livewire\Admin\ViewAds\EmpWebDevSites;
 use App\Livewire\Pages\Employee\EmployeesList;
 use App\Livewire\Pages\Employee\SeoSpecialist;
 use App\Livewire\Pages\Employee\CustomerSupprt;
@@ -98,10 +100,12 @@ Route::middleware(['auth'])->group(function (): void {
     Route::get('/employees/customersupport', CustomerSupprt::class)->name('emp.customersupport');
 
     Route::get('employees/activeads', Activeads::class)->name('employee.activeads');
-    Route::get('employees/clientleft', AdsClientleft::class)->name('employee.clientleftads');
-    Route::get('employees/pausedads', Pausedads::class)->name('employee.pausedads');
-    Route::get('employees/overdueads', Overdueemployeeads::class)->name('employee.overdueads');
+    // Route::get('employees/clientleft', AdsClientleft::class)->name('employee.clientleftads');
+    // Route::get('employees/pausedads', Pausedads::class)->name('employee.pausedads');
+    // Route::get('employees/overdueads', Overdueemployeeads::class)->name('employee.overdueads');
     Route::get('employees/view/{id}/{status?}', EmpActiveAds::class)->name('employee.view');
+    Route::get('employees/webdev', WebDevEmployees::class)->name('employees.webdev');
+    Route::get('webdevs/sites/{id}/{status?}', EmpWebDevSites::class)->name('webdev.employee.sites');
     // 🔸 Digital Marketing Routes
     Route::middleware(['check.department.or.role:digital marketing,Admin,Employee,Manager,Customer Support'])->group(function () {
         Route::get('/adds', AdInformation::class)->name('ads');

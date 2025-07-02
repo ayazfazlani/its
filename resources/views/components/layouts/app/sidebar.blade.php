@@ -38,7 +38,7 @@
                     <flux:navlist.item icon="cake" href="{{ route('emp.customersupport') }}" :current="request()->routeIs('emp.customersupport')">Customer Support</flux:navlist.item>
                 @endcan
             </flux:navlist.group>
-
+           
             <!-- Web Projects -->
             @can('View Websites')
                 <flux:navlist.group heading="Web Projects" class="grid">
@@ -49,11 +49,12 @@
                 </flux:navlist.group>
             @endcan
             @role(['Admin','Manager'])
-            <flux:navlist.group heading="Digital Marketing Employees" class="grid">
+            <flux:navlist.group heading="Employees Dashboard" class="grid">
                 <flux:navlist.item icon="rocket-launch" href="{{ route('employee.activeads') }}" :current="request()->routeIs('employee.activeads')">Active Ads</flux:navlist.item>
                 {{-- <flux:navlist.item icon="pause-circle" href="{{ route('employee.pausedads') }}" :current="request()->routeIs('employee.pausedads')">Paused Ads</flux:navlist.item>
                 <flux:navlist.item icon="stop-circle" href="{{ route('employee.overdueads') }}" :current="request()->routeIs('employee.overdueads')">Overdue Ads</flux:navlist.item>
                 <flux:navlist.item icon="chart-bar" href="{{ route('employee.clientleftads') }}" :current="request()->routeIs('employee.clientleftads')">Clients Left</flux:navlist.item> --}}
+                <flux:navlist.item icon="rocket-launch" href="{{ route('employees.webdev') }}" :current="request()->routeIs('employees.webdev')">Web Development</flux:navlist.item>
             </flux:navlist.group>
             @endrole
             <!-- Google Ads -->
