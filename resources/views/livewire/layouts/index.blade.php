@@ -18,6 +18,7 @@
         </div>
     </div>
     <!-- Notices Section -->
+    @can('View Notice')
     <div class="card bg-info-content shadow-xl mt-6">
         <div class="card-body">
             <h5 class="card-title mb-4 text-info">Latest Notices</h5>
@@ -31,7 +32,9 @@
                                 </span>
                                 <span class="font-bold text-lg">{{ $notice->title }}</span>
                             </div>
-                            <div class="text-base-content/80">{{ $notice->content }}</div>
+                            <div class="text-base-content/80 max-h-24 overflow-y-auto whitespace-pre-wrap text-sm">
+                                {{ $notice->content }}
+                            </div>
                             <div class="text-xs text-base-content/60 mt-1">
                                 By: {{ $notice->creator->name ?? 'Unknown' }} |
                                 {{ $notice->created_at->format('d M Y H:i') }}
@@ -44,6 +47,7 @@
             @endif
         </div>
     </div>
+    @endcan
     <!-- Employee Stats -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div class="card bg-base-100 shadow-xl">

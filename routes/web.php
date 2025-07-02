@@ -34,6 +34,7 @@ use App\Livewire\Pages\Notices\NoticeList;
 use App\Livewire\Pages\Web\CancelledSites;
 use App\Livewire\Pages\Web\DeliveredSites;
 use App\Livewire\Admin\Ads\ViewEmployeeAds;
+use App\Livewire\Admin\ViewAds\EmpActiveAds;
 use App\Livewire\Pages\Notices\NoticeForAll;
 use App\Livewire\Admin\Ads\Overdueemployeeads;
 use App\Livewire\Pages\Employee\EmployeesList;
@@ -100,7 +101,7 @@ Route::middleware(['auth'])->group(function (): void {
     Route::get('employees/clientleft', AdsClientleft::class)->name('employee.clientleftads');
     Route::get('employees/pausedads', Pausedads::class)->name('employee.pausedads');
     Route::get('employees/overdueads', Overdueemployeeads::class)->name('employee.overdueads');
-    Route::get('employees/view/{id}', ViewEmployeeAds::class)->name('employee.view');
+    Route::get('employees/view/{id}/{status?}', EmpActiveAds::class)->name('employee.view');
     // 🔸 Digital Marketing Routes
     Route::middleware(['check.department.or.role:digital marketing,Admin,Employee,Manager,Customer Support'])->group(function () {
         Route::get('/adds', AdInformation::class)->name('ads');
