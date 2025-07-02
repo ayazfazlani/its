@@ -34,7 +34,7 @@
                 @can('View Employees')
                     <flux:navlist.item icon="user-group" href="{{ route('employees.list') }}" :current="request()->routeIs('employees.*')">Employees</flux:navlist.item>
                     <flux:navlist.item icon="users" href="{{ route('emp.marketers') }}" :current="request()->routeIs('emp.marketers')">Digital Marketers</flux:navlist.item>
-                    <flux:navlist.item icon="magnifying-glass" href="{{ route('emp.seo') }}" :current="request()->routeIs('emp.seo')">SEO Specialists</flux:navlist.item>
+                    <flux:navlist.item icon="magnifying-glass" href="{{ route('emp.seo') }}" :current="request()->routeIs('emp.seo')">Web Designers</flux:navlist.item>
                     <flux:navlist.item icon="cake" href="{{ route('emp.customersupport') }}" :current="request()->routeIs('emp.customersupport')">Customer Support</flux:navlist.item>
                 @endcan
             </flux:navlist.group>

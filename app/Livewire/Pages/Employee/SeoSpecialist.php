@@ -140,7 +140,7 @@ class SeoSpecialist extends Component
         return view('livewire.pages.employee.seo-specialist', [
             'branches' => $this->branches,
             'users' => $this->users,
-            'employees' => Employee::with('user', 'branch')->where('department', 'seo')->get(),
+            'employees' => Employee::with('user', 'branch')->where('department', 'web design')->get(),
         ]);
     }
 }

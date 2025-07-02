@@ -1,6 +1,14 @@
 <div>
     <div class="flex justify-between items-center mb-4">
-        <h2 class="text-2xl font-bold">Ad Details</h2>
+        <div class="flex items-center gap-4">
+            <button class="btn btn-outline" onclick="history.back()">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Back
+            </button>
+            <h2 class="text-2xl font-bold">Ad Details</h2>
+        </div>
         <button class="btn btn-primary" wire:click="popUp">Add Detail</button>
     </div>
 
